@@ -21,6 +21,7 @@
   --yellow-bg:#fefce8;--yellow-border:#fde047;--yellow-text:#854d0e;
   --warn-bg:#fef3c7;--warn-border:#fcd34d;--warn:#b45309;
   --info:#1d4ed8;--info-bg:#eff6ff;--info-border:#93c5fd;
+  --danger:#dc2626;--danger-bg:#fef2f2;--danger-border:#fca5a5;
   --radius:12px;--radius-sm:8px;--shadow:0 1px 3px rgba(0,0,0,.06);
 }
 @media(prefers-color-scheme:dark){:root{
@@ -30,28 +31,26 @@
   --yellow-bg:#2a1f00;--yellow-border:#854d0e;--yellow-text:#fde047;
   --warn-bg:#2d1f02;--warn-border:#78350f;--warn:#fbbf24;
   --info:#60a5fa;--info-bg:#0f1e3d;--info-border:#1e3a8a;
+  --danger:#f87171;--danger-bg:#2d0a0a;--danger-border:#991b1b;
 }}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.6}
 body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height:100dvh}
 .main{flex:1;padding:1.25rem 1rem calc(72px + env(safe-area-inset-bottom));overflow-y:auto}
 .page{display:none}.page.active{display:block}
-
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px 8px;border:none;background:transparent;color:var(--text3);cursor:pointer;font-family:inherit;font-size:10px;transition:color .15s}
 .nav-btn.active{color:var(--accent)}
 .nav-btn i{font-size:22px}
-
 .day-hero{margin-bottom:1.25rem}
 .hero-label{font-size:11px;color:var(--text3);font-weight:700;letter-spacing:.1em;margin-bottom:3px}
 .hero-date{font-size:24px;font-weight:700}
-.sec{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.1em;margin:1.25rem 0 8px}
+.sec{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.08em;margin:1.25rem 0 8px}
 .sec:first-child{margin-top:0}
 .empty{text-align:center;padding:3rem 1rem;color:var(--text3)}
 .empty i{font-size:40px;display:block;margin-bottom:12px;opacity:.5}
 .empty p{font-size:14px;line-height:1.9}
-
-.lcard{display:flex;align-items:center;gap:12px;padding:14px 15px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer;transition:background .12s,border-color .12s,opacity .15s}
+.lcard{display:flex;align-items:center;gap:12px;padding:14px 15px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer;transition:background .12s,opacity .15s}
 .lcard:active{background:var(--surface2)}
 .lcard.attended{background:var(--yellow-bg);border-color:var(--yellow-border)}
 .lcard.current{border-color:var(--info-border)}
@@ -61,7 +60,6 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .l-room{font-size:12px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;flex-shrink:0}
 .now-chip{font-size:10px;font-weight:700;background:var(--info);color:#fff;border-radius:6px;padding:2px 7px;flex-shrink:0}
 .att-mark{font-size:18px;color:var(--yellow-text);flex-shrink:0}
-
 .evcard{display:flex;align-items:flex-start;gap:12px;padding:12px 15px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow)}
 .evcard.joined{background:var(--accent-bg);border-color:var(--accent-border)}
 .evcard.planned{background:var(--warn-bg);border-color:var(--warn-border)}
@@ -76,7 +74,6 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .b-joined{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-border)}
 .b-planned{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-border)}
 .b-none{background:var(--surface2);color:var(--text3);border-color:var(--border)}
-
 .cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
 .cal-mon{font-size:18px;font-weight:700}
 .cal-arr{width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);box-shadow:var(--shadow)}
@@ -91,15 +88,6 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .pip{font-size:9px;border-radius:3px;padding:1px 2px;text-align:center;line-height:1.5;margin-bottom:2px;border:1px solid}
 .pip.lesson{background:var(--info-bg);color:var(--info);border-color:var(--info-border)}
 .pip.event{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-border)}
-
-.att-total{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius);padding:16px;margin-bottom:1.25rem;display:flex;align-items:center;gap:14px}
-.att-total-num{font-size:36px;font-weight:700;color:var(--accent);line-height:1}
-.att-total-sub{font-size:13px;font-weight:500;color:var(--accent-text)}
-.att-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 15px;margin-bottom:8px;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px}
-.att-name{flex:1;font-size:15px;font-weight:500}
-.att-count{font-size:24px;font-weight:700;color:var(--yellow-text);line-height:1}
-.att-unit{font-size:11px;color:var(--text3);text-align:right;margin-top:2px}
-
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
 .sheet{background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:480px;padding:1.25rem 1rem calc(1.5rem + env(safe-area-inset-bottom));max-height:90dvh;overflow-y:auto}
@@ -107,22 +95,27 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .sh-title{font-size:17px;font-weight:700;margin-bottom:1rem}
 .sh-close{width:100%;padding:12px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text2);font-size:14px;cursor:pointer;margin-top:12px;font-family:inherit;font-weight:500}
 .sh-ev{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:var(--radius-sm);margin-bottom:8px}
-
 .reg-slot{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .reg-time{font-size:12px;color:var(--text3);width:36px;flex-shrink:0;font-weight:500}
-.reg-card{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;display:flex;align-items:center;gap:6px}
-.reg-card.has{border-color:var(--accent-border);background:var(--surface)}
-select{border:none;background:transparent;color:var(--text);cursor:pointer;padding:0;outline:none;font-family:inherit;font-size:14px;flex:1;min-width:0}
-.rsel{font-size:12px;color:var(--text2);width:52px;flex:none}
+.reg-card{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;display:flex;align-items:center;gap:8px}
+.reg-card.has{background:var(--surface);border-color:var(--accent-border)}
+.subj-sel{border:none;background:transparent;color:var(--text);cursor:pointer;padding:0;outline:none;font-family:inherit;font-size:14px;flex:1;min-width:0}
+.room-sel{font-size:13px;color:var(--text2);background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:3px 6px;outline:none;font-family:inherit;cursor:pointer;flex-shrink:0;min-width:58px}
 .clr-btn{width:24px;height:24px;border-radius:50%;border:1px solid var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0}
 .clr-btn:active{background:var(--border)}
-
-.bottom-actions{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,1fr);gap:8px;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)}
-.sync-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;font-size:13px;font-weight:500;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;font-family:inherit;width:100%}
-.sync-btn:active{background:var(--surface2)}
-.sheet-link-btn{display:flex;align-items:center;justify-content:center;padding:11px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text2);text-decoration:none;width:100%}
-.last-sync{font-size:11px;color:var(--text3);text-align:center;grid-column:1/-1;padding-top:2px}
-
+.set-group-label{font-size:11px;font-weight:500;color:var(--text3);letter-spacing:.06em;margin-bottom:8px}
+.set-group{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.25rem;box-shadow:var(--shadow)}
+.set-row{display:flex;align-items:center;padding:14px 16px;gap:12px;cursor:pointer;transition:background .1s}
+.set-row:active{background:var(--surface2)}
+.set-row+.set-row{border-top:1px solid var(--border)}
+.set-row-icon{font-size:20px;color:var(--text2);flex-shrink:0}
+.set-row-icon.danger{color:var(--danger)}
+.set-row-body{flex:1}
+.set-row-title{font-size:14px;font-weight:500;color:var(--text)}
+.set-row-title.danger{color:var(--danger)}
+.set-row-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.set-row-arrow{font-size:16px;color:var(--text3)}
+.set-last-sync{font-size:11px;color:var(--text3);text-align:center;margin-top:.5rem}
 .dialog-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;padding:2rem}
 .dialog-bg.open{display:flex}
 .dialog{background:var(--surface);border-radius:var(--radius);padding:1.5rem;width:100%;max-width:300px}
@@ -135,7 +128,8 @@ select{border:none;background:transparent;color:var(--text);cursor:pointer;paddi
 .dlg-no{background:var(--surface2);color:var(--text2)}
 .dlg-no:active{background:var(--border)}
 .dlg-undo{width:100%;padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-top:8px}
-
+.dlg-danger{background:var(--danger-bg);border-color:var(--danger-border);color:var(--danger)}
+.dlg-danger:active{opacity:.8}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinning{animation:spin .8s linear infinite;display:inline-block}
 </style>
@@ -156,7 +150,7 @@ select{border:none;background:transparent;color:var(--text);cursor:pointer;paddi
     </div>
   </div>
   <div class="page" id="page-events"></div>
-  <div class="page" id="page-attend"></div>
+  <div class="page" id="page-settings"></div>
 </main>
 
 <nav class="nav">
@@ -164,7 +158,7 @@ select{border:none;background:transparent;color:var(--text);cursor:pointer;paddi
   <button class="nav-btn" onclick="showPage('tmrw')" id="nav-tmrw"><i class="ti ti-moon"></i>明日</button>
   <button class="nav-btn" onclick="showPage('cal')" id="nav-cal"><i class="ti ti-calendar"></i>カレンダー</button>
   <button class="nav-btn" onclick="showPage('events')" id="nav-events"><i class="ti ti-star"></i>行事</button>
-  <button class="nav-btn" onclick="showPage('attend')" id="nav-attend"><i class="ti ti-chart-bar"></i>出席</button>
+  <button class="nav-btn" onclick="showPage('settings')" id="nav-settings"><i class="ti ti-settings"></i>設定</button>
 </nav>
 
 <div class="overlay" id="cal-overlay" onclick="closeCalSheet(event)">
@@ -188,18 +182,28 @@ select{border:none;background:transparent;color:var(--text);cursor:pointer;paddi
   </div>
 </div>
 
-<script>
-const SHEET_ID = '1FEAlmLlGvrKvwpAPJZB2pB0Z1RhVvnGqrrEjrNRUi2A';
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit?gid=1793831840#gid=1793831840';
-const PROXY = 'https://corsproxy.io/?';
-const GID_SUBJECTS = '1027770274';
-const GID_EVENTS = '1793831840';
-const ROOMS = ['301','302','401','501','601','701','801'];
-const HOURS = [9,10,11,12,13,14,15,16];
-const WDAYS = ['日','月','火','水','木','金','土'];
+<div class="dialog-bg" id="reset-dlg-bg">
+  <div class="dialog">
+    <div class="dlg-title">データをリセット</div>
+    <div class="dlg-sub">登録した授業・出席記録が全て削除されます。この操作は取り消せません。</div>
+    <div class="dlg-btns">
+      <button class="dlg-btn dlg-no" onclick="closeResetDlg(false)">キャンセル</button>
+      <button class="dlg-btn dlg-danger" onclick="closeResetDlg(true)">リセットする</button>
+    </div>
+  </div>
+</div>
 
-const DEF_SUBJECTS = ['現代の国語','言語文化','地理総合','歴史総合','数学Ⅰ','科学と人間生活','体育①','保険①','英語コミュⅠ','情報Ⅰ','総合探求①','キャリ教基'];
-const DEF_EVENTS = [
+<script>
+var SHEET_ID = '1FEAlmLlGvrKvwpAPJZB2pB0Z1RhVvnGqrrEjrNRUi2A';
+var SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit?gid=1793831840#gid=1793831840';
+var PROXY = 'https://corsproxy.io/?';
+var GID_SUBJECTS = '1027770274';
+var GID_EVENTS = '1793831840';
+var ROOMS = ['301','302','401','501','601','701','801'];
+var HOURS = [9,10,11,12,13,14,15,16];
+var WDAYS = ['日','月','火','水','木','金','土'];
+var DEF_SUBJECTS = ['現代の国語','言語文化','地理総合','歴史総合','数学Ⅰ','科学と人間生活','体育①','保険①','英語コミュⅠ','情報Ⅰ','総合探求①','キャリ教基'];
+var DEF_EVENTS = [
   {date:'2026-04-01',name:'スタートアップセミナー',memo:'',units:2,status:'参加済み'},
   {date:'2026-04-01',name:'進路ガイダンス',memo:'',units:2,status:'参加済み'},
   {date:'2026-04-06',name:'入学式',memo:'',units:1,status:'参加済み'},
@@ -229,21 +233,21 @@ const DEF_EVENTS = [
   {date:'2027-03-08',name:'後期卒業式',memo:'福岡市民ホール',units:2,status:'参加予定'}
 ];
 
-let state = JSON.parse(localStorage.getItem('school_v10') || 'null') || {dates:[],data:{},subjects:[],events:[],lastUpdated:null};
+var state = JSON.parse(localStorage.getItem('school_v11') || 'null') || {dates:[],data:{},subjects:[],events:[],lastUpdated:null};
 if (!state.subjects || !state.subjects.length) state.subjects = DEF_SUBJECTS;
 if (!state.events || !state.events.length) state.events = DEF_EVENTS;
 
-let curPage = 'today', calY = 0, calM = 0, dlgKey = null, dlgH = null, calSheetKey = null;
+var curPage = 'today', calY = 0, calM = 0, dlgKey = null, dlgH = null, calSheetKey = null;
 
-function save() { try { localStorage.setItem('school_v10', JSON.stringify(state)); } catch(e) {} }
+function save() { try { localStorage.setItem('school_v11', JSON.stringify(state)); } catch(e) {} }
 function dateKey(d) { return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); }
-function fmtMD(s) { const p = s.split('-'); return parseInt(p[1]) + '月' + parseInt(p[2]) + '日'; }
+function fmtMD(s) { var p = s.split('-'); return parseInt(p[1]) + '月' + parseInt(p[2]) + '日'; }
 function wday(s) { return WDAYS[new Date(s + 'T00:00:00').getDay()]; }
 function nowD() { return new Date(); }
 
 function showPage(p) {
   curPage = p;
-  ['today','tmrw','cal','events','attend'].forEach(function(id) {
+  ['today','tmrw','cal','events','settings'].forEach(function(id) {
     document.getElementById('page-' + id).classList.toggle('active', id === p);
     document.getElementById('nav-' + id).classList.toggle('active', id === p);
   });
@@ -251,7 +255,7 @@ function showPage(p) {
   else if (p === 'tmrw') renderDay('tmrw');
   else if (p === 'cal') renderCal();
   else if (p === 'events') renderEvents();
-  else renderAttend();
+  else renderSettings();
 }
 
 function renderDay(which) {
@@ -277,8 +281,7 @@ function renderDay(which) {
   var classes = dayData ? HOURS.filter(function(h) { return dayData[h] && dayData[h].subject; }) : [];
   if (!classes.length) {
     if (!dayEvts.length) html += '<div class="empty"><i class="ti ti-calendar-off"></i><p>授業が登録されていません<br><span style="font-size:12px">カレンダーの日付をタップして登録できます</span></p></div>';
-    con.innerHTML = html;
-    return;
+    con.innerHTML = html; return;
   }
 
   var past = which === 'today' ? classes.filter(function(h) { return h < nowH; }) : [];
@@ -315,9 +318,7 @@ function closeDlg(result) {
   document.getElementById('dlg-bg').classList.remove('open');
   if (result === true || result === 'undo') {
     state.data[dlgKey][dlgH].attended = (result === true);
-    save(); renderDay('today');
-    if (curPage === 'attend') renderAttend();
-    renderCal();
+    save(); renderDay('today'); renderCal();
   }
   dlgKey = null; dlgH = null;
 }
@@ -353,7 +354,7 @@ function renderCal() {
   for (var i = first.getDay() - 1; i >= 0; i--) cells.push({d: prev - i, mo: calM - 1, other: true});
   for (var d = 1; d <= dim; d++) cells.push({d: d, mo: calM, other: false});
   var rem = (7 - cells.length % 7) % 7;
-  for (var d = 1; d <= rem; d++) cells.push({d: d, mo: calM + 1, other: true});
+  for (var d2 = 1; d2 <= rem; d2++) cells.push({d: d2, mo: calM + 1, other: true});
   cells.forEach(function(item) {
     var m = ((item.mo % 12) + 12) % 12;
     var y = calY + (item.mo < 0 ? -1 : item.mo > 11 ? 1 : 0);
@@ -398,11 +399,9 @@ function renderCalSheetBody(key) {
     var has = !!slot.subject;
     var subjOpts = '<option value="">（なし）</option>' + state.subjects.map(function(s) { return '<option value="' + s + '"' + (slot.subject === s ? ' selected' : '') + '>' + s + '</option>'; }).join('');
     var roomOpts = '<option value="">　</option>' + ROOMS.map(function(r) { return '<option value="' + r + '"' + (slot.room === r ? ' selected' : '') + '>' + r + '</option>'; }).join('');
-    html += '<div class="reg-slot"><span class="reg-time">' + h + ':00</span><div class="reg-card' + (has ? ' has' : '') + '" id="rc-' + h + '"><select id="ss-' + h + '" onchange="onSubjChange(' + h + ')" aria-label="' + h + '時の科目">' + subjOpts + '</select>' + (has ? '<select class="rsel" id="rs-' + h + '" onchange="onRoomChange(' + h + ')" aria-label="教室">' + roomOpts + '</select><button class="clr-btn" onclick="clearSlot(' + h + ')" aria-label="クリア"><i class="ti ti-x" style="font-size:12px"></i></button>' : '') + '</div></div>';
+    html += '<div class="reg-slot"><span class="reg-time">' + h + ':00</span><div class="reg-card' + (has ? ' has' : '') + '" id="rc-' + h + '"><select class="subj-sel" id="ss-' + h + '" onchange="onSubjChange(' + h + ')" aria-label="' + h + '時の科目">' + subjOpts + '</select>' + (has ? '<select class="room-sel" id="rs-' + h + '" onchange="onRoomChange(' + h + ')" aria-label="教室">' + roomOpts + '</select><button class="clr-btn" onclick="clearSlot(' + h + ')" aria-label="クリア"><i class="ti ti-x" style="font-size:12px"></i></button>' : '') + '</div></div>';
   });
-  html += '<div class="bottom-actions"><button class="sync-btn" onclick="syncFromSheet()" id="sync-btn-sh"><i class="ti ti-refresh" style="font-size:15px"></i> 科目リスト・行事を更新</button><a class="sheet-link-btn" href="' + SHEET_URL + '" target="_blank" rel="noopener" aria-label="スプレッドシートを開く"><i class="ti ti-table" style="font-size:20px"></i></a><div class="last-sync" id="last-sync-txt"></div></div>';
   document.getElementById('cal-sheet-body').innerHTML = html;
-  renderLastSync();
 }
 
 function onSubjChange(h) {
@@ -430,42 +429,37 @@ function closeCalSheet(e) {
   }
 }
 
-function renderAttend() {
-  var con = document.getElementById('page-attend');
-  var counts = {};
-  state.subjects.forEach(function(s) { counts[s] = 0; });
-  var total = 0;
-  Object.values(state.data).forEach(function(day) {
-    HOURS.forEach(function(h) {
-      var sl = day[h];
-      if (sl && sl.subject && sl.attended) { counts[sl.subject] = (counts[sl.subject] || 0) + 1; total++; }
-    });
-  });
-  var html = '<div class="sec" style="margin-top:0">出席コマ数</div><div class="att-total"><div class="att-total-num">' + total + '</div><div class="att-total-sub">合計出席コマ数</div></div>';
-  var active = state.subjects.filter(function(s) { return counts[s] > 0; }).sort(function(a,b) { return counts[b] - counts[a]; });
-  var inactive = state.subjects.filter(function(s) { return !counts[s]; });
-  active.forEach(function(s) {
-    html += '<div class="att-card"><span class="att-name">' + s + '</span><div style="text-align:right"><div class="att-count">' + counts[s] + '</div><div class="att-unit">コマ</div></div></div>';
-  });
-  if (inactive.length) {
-    if (active.length) html += '<div class="sec" style="margin-top:1.25rem">未出席</div>';
-    inactive.forEach(function(s) {
-      html += '<div class="att-card" style="opacity:.4"><span class="att-name">' + s + '</span><div style="text-align:right"><div class="att-count" style="font-size:18px;color:var(--text3)">0</div><div class="att-unit">コマ</div></div></div>';
-    });
+function renderSettings() {
+  var lastSync = '';
+  if (state.lastUpdated) {
+    var d = new Date(state.lastUpdated);
+    lastSync = '最終更新: ' + d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
+  } else {
+    lastSync = 'まだ更新していません（初期データ表示中）';
   }
-  con.innerHTML = html;
+  var html = '<div class="sec">スプレッドシート連携</div><div class="set-group"><div class="set-row" onclick="syncFromSheet()"><i class="ti ti-refresh set-row-icon" id="sync-icon"></i><div class="set-row-body"><div class="set-row-title">科目リスト・行事を更新</div><div class="set-row-sub">スプシの内容を読み込む</div></div><i class="ti ti-chevron-right set-row-arrow"></i></div><a class="set-row" href="' + SHEET_URL + '" target="_blank" rel="noopener" style="text-decoration:none"><i class="ti ti-table set-row-icon"></i><div class="set-row-body"><div class="set-row-title">スプレッドシートを開く</div><div class="set-row-sub">Googleスプレッドシートへ</div></div><i class="ti ti-external-link set-row-arrow"></i></a></div><div class="set-last-sync" id="set-last-sync">' + lastSync + '</div><div class="sec" style="margin-top:1.5rem">データ管理</div><div class="set-group"><div class="set-row" onclick="openResetDlg()"><i class="ti ti-trash set-row-icon danger"></i><div class="set-row-body"><div class="set-row-title danger">データをリセット</div><div class="set-row-sub">登録した授業・出席記録を全て削除</div></div><i class="ti ti-chevron-right set-row-arrow"></i></div></div>';
+  document.getElementById('page-settings').innerHTML = html;
 }
 
-function renderLastSync() {
-  var el = document.getElementById('last-sync-txt'); if (!el) return;
-  if (state.lastUpdated) { var d = new Date(state.lastUpdated); el.textContent = '最終更新: ' + d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0'); }
-  else el.textContent = 'まだ更新していません（初期データ表示中）';
+function openResetDlg() {
+  document.getElementById('reset-dlg-bg').classList.add('open');
+}
+function closeResetDlg(doReset) {
+  document.getElementById('reset-dlg-bg').classList.remove('open');
+  if (doReset) {
+    state.dates = [];
+    state.data = {};
+    save();
+    renderCal();
+    if (curPage === 'today') renderDay('today');
+    if (curPage === 'tmrw') renderDay('tmrw');
+    renderSettings();
+  }
 }
 
 async function syncFromSheet() {
-  var btn = document.getElementById('sync-btn-sh'); if (!btn) return;
-  btn.disabled = true;
-  btn.innerHTML = '<i class="ti ti-refresh spinning" style="font-size:15px"></i> 読み込み中…';
+  var icon = document.getElementById('sync-icon');
+  if (icon) { icon.className = 'ti ti-refresh set-row-icon spinning'; }
   try {
     var r1 = await fetch(PROXY + encodeURIComponent('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID_SUBJECTS));
     var r2 = await fetch(PROXY + encodeURIComponent('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID_EVENTS));
@@ -475,14 +469,14 @@ async function syncFromSheet() {
     if (ns.length) state.subjects = ns;
     if (ne.length) state.events = ne;
     state.lastUpdated = new Date().toISOString();
-    save(); renderLastSync();
-    btn.innerHTML = '<i class="ti ti-check" style="font-size:15px"></i> 更新しました！';
+    save();
     if (curPage === 'events') renderEvents();
     renderCal();
+    renderSettings();
   } catch(err) {
-    btn.innerHTML = '<i class="ti ti-alert-circle" style="font-size:15px"></i> 失敗。もう一度お試しください';
+    if (icon) { icon.className = 'ti ti-alert-circle set-row-icon'; }
+    setTimeout(function() { renderSettings(); }, 2000);
   }
-  setTimeout(function() { btn.disabled = false; btn.innerHTML = '<i class="ti ti-refresh" style="font-size:15px"></i> 科目リスト・行事を更新'; }, 3000);
 }
 
 function parseCSV(text) {
