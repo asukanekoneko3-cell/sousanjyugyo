@@ -196,9 +196,26 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 <script>
 var SHEET_ID = '1FEAlmLlGvrKvwpAPJZB2pB0Z1RhVvnGqrrEjrNRUi2A';
 var SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit?gid=1793831840#gid=1793831840';
-var PROXY = 'https://api.allorigins.win/raw?url=';
 var GID_SUBJECTS = '1793831840';
 var GID_EVENTS = '1027770274';
+var PROXIES = [
+  function(u){return 'https://corsproxy.io/?' + encodeURIComponent(u);},
+  function(u){return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u);},
+  function(u){return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u);}
+];
+async function fetchWithFallback(url) {
+  var lastErr;
+  for (var i = 0; i < PROXIES.length; i++) {
+    try {
+      var res = await fetch(PROXIES[i](url));
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      var text = await res.text();
+      if (!text || text.length < 10) throw new Error('empty');
+      return text;
+    } catch(e) { lastErr = e; }
+  }
+  throw lastErr;
+}
 var ROOMS = ['301','302','401','501','601','701','801'];
 var HOURS = [9,10,11,12,13,14,15,16];
 var WDAYS = ['日','月','火','水','木','金','土'];
@@ -461,9 +478,8 @@ async function syncFromSheet() {
   var icon = document.getElementById('sync-icon');
   if (icon) { icon.className = 'ti ti-refresh set-row-icon spinning'; }
   try {
-    var r1 = await fetch(PROXY + encodeURIComponent('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID_SUBJECTS));
-    var r2 = await fetch(PROXY + encodeURIComponent('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID_EVENTS));
-    var csv1 = await r1.text(); var csv2 = await r2.text();
+    var csv1 = await fetchWithFallback('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID_SUBJECTS);
+    var csv2 = await fetchWithFallback('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID_EVENTS);
     var ns = extractSubjects(parseCSV(csv1));
     var ne = extractEvents(parseCSV(csv2));
     if (ns.length) state.subjects = ns;
