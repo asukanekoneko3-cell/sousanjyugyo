@@ -196,7 +196,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 <script>
 var SHEET_ID = '1FEAlmLlGvrKvwpAPJZB2pB0Z1RhVvnGqrrEjrNRUi2A';
 var SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit?gid=1793831840#gid=1793831840';
-var PROXY = 'https://corsproxy.io/?';
+var PROXY = 'https://api.allorigins.win/raw?url=';
 var GID_SUBJECTS = '1793831840';
 var GID_EVENTS = '1027770274';
 var ROOMS = ['301','302','401','501','601','701','801'];
@@ -475,6 +475,7 @@ async function syncFromSheet() {
     renderSettings();
   } catch(err) {
     if (icon) { icon.className = 'ti ti-alert-circle set-row-icon'; }
+    alert('更新失敗: ' + err.message);
     setTimeout(function() { renderSettings(); }, 2000);
   }
 }
