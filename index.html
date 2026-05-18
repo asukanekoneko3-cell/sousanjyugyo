@@ -36,10 +36,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
 body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height:100dvh}
 .main{flex:1;padding:1.25rem 1rem calc(72px + env(safe-area-inset-bottom));overflow-y:auto}
 .page{display:none}.page.active{display:block}
+
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px 8px;border:none;background:transparent;color:var(--text3);cursor:pointer;font-family:inherit;font-size:10px;transition:color .15s}
 .nav-btn.active{color:var(--accent)}
 .nav-btn i{font-size:22px}
+
 .day-hero{margin-bottom:1.25rem}
 .hero-label{font-size:11px;color:var(--text3);font-weight:700;letter-spacing:.1em;margin-bottom:3px}
 .hero-date{font-size:24px;font-weight:700}
@@ -48,6 +50,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .empty{text-align:center;padding:3rem 1rem;color:var(--text3)}
 .empty i{font-size:40px;display:block;margin-bottom:12px;opacity:.5}
 .empty p{font-size:14px;line-height:1.9}
+
 .lcard{display:flex;align-items:center;gap:12px;padding:14px 15px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer;transition:background .12s,border-color .12s,opacity .15s}
 .lcard:active{background:var(--surface2)}
 .lcard.attended{background:var(--yellow-bg);border-color:var(--yellow-border)}
@@ -58,6 +61,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .l-room{font-size:12px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;flex-shrink:0}
 .now-chip{font-size:10px;font-weight:700;background:var(--info);color:#fff;border-radius:6px;padding:2px 7px;flex-shrink:0}
 .att-mark{font-size:18px;color:var(--yellow-text);flex-shrink:0}
+
 .evcard{display:flex;align-items:flex-start;gap:12px;padding:12px 15px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow)}
 .evcard.joined{background:var(--accent-bg);border-color:var(--accent-border)}
 .evcard.planned{background:var(--warn-bg);border-color:var(--warn-border)}
@@ -72,6 +76,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .b-joined{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-border)}
 .b-planned{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-border)}
 .b-none{background:var(--surface2);color:var(--text3);border-color:var(--border)}
+
 .cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
 .cal-mon{font-size:18px;font-weight:700}
 .cal-arr{width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);box-shadow:var(--shadow)}
@@ -86,6 +91,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .pip{font-size:9px;border-radius:3px;padding:1px 2px;text-align:center;line-height:1.5;margin-bottom:2px;border:1px solid}
 .pip.lesson{background:var(--info-bg);color:var(--info);border-color:var(--info-border)}
 .pip.event{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-border)}
+
 .att-total{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius);padding:16px;margin-bottom:1.25rem;display:flex;align-items:center;gap:14px}
 .att-total-num{font-size:36px;font-weight:700;color:var(--accent);line-height:1}
 .att-total-sub{font-size:13px;font-weight:500;color:var(--accent-text)}
@@ -93,6 +99,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .att-name{flex:1;font-size:15px;font-weight:500}
 .att-count{font-size:24px;font-weight:700;color:var(--yellow-text);line-height:1}
 .att-unit{font-size:11px;color:var(--text3);text-align:right;margin-top:2px}
+
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
 .sheet{background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:480px;padding:1.25rem 1rem calc(1.5rem + env(safe-area-inset-bottom));max-height:90dvh;overflow-y:auto}
@@ -100,6 +107,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .sh-title{font-size:17px;font-weight:700;margin-bottom:1rem}
 .sh-close{width:100%;padding:12px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text2);font-size:14px;cursor:pointer;margin-top:12px;font-family:inherit;font-weight:500}
 .sh-ev{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:var(--radius-sm);margin-bottom:8px}
+
 .reg-slot{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .reg-time{font-size:12px;color:var(--text3);width:36px;flex-shrink:0;font-weight:500}
 .reg-card{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;display:flex;align-items:center;gap:6px}
@@ -108,11 +116,13 @@ select{border:none;background:transparent;color:var(--text);cursor:pointer;paddi
 .rsel{font-size:12px;color:var(--text2);width:52px;flex:none}
 .clr-btn{width:24px;height:24px;border-radius:50%;border:1px solid var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0}
 .clr-btn:active{background:var(--border)}
+
 .bottom-actions{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,1fr);gap:8px;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)}
 .sync-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;font-size:13px;font-weight:500;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;font-family:inherit;width:100%}
 .sync-btn:active{background:var(--surface2)}
 .sheet-link-btn{display:flex;align-items:center;justify-content:center;padding:11px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text2);text-decoration:none;width:100%}
 .last-sync{font-size:11px;color:var(--text3);text-align:center;grid-column:1/-1;padding-top:2px}
+
 .dialog-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;padding:2rem}
 .dialog-bg.open{display:flex}
 .dialog{background:var(--surface);border-radius:var(--radius);padding:1.5rem;width:100%;max-width:300px}
@@ -125,6 +135,7 @@ select{border:none;background:transparent;color:var(--text);cursor:pointer;paddi
 .dlg-no{background:var(--surface2);color:var(--text2)}
 .dlg-no:active{background:var(--border)}
 .dlg-undo{width:100%;padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-top:8px}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinning{animation:spin .8s linear infinite;display:inline-block}
 </style>
@@ -147,5 +158,375 @@ select{border:none;background:transparent;color:var(--text);cursor:pointer;paddi
   <div class="page" id="page-events"></div>
   <div class="page" id="page-attend"></div>
 </main>
+
 <nav class="nav">
-  <button class="nav
+  <button class="nav-btn active" onclick="showPage('today')" id="nav-today"><i class="ti ti-sun"></i>今日</button>
+  <button class="nav-btn" onclick="showPage('tmrw')" id="nav-tmrw"><i class="ti ti-moon"></i>明日</button>
+  <button class="nav-btn" onclick="showPage('cal')" id="nav-cal"><i class="ti ti-calendar"></i>カレンダー</button>
+  <button class="nav-btn" onclick="showPage('events')" id="nav-events"><i class="ti ti-star"></i>行事</button>
+  <button class="nav-btn" onclick="showPage('attend')" id="nav-attend"><i class="ti ti-chart-bar"></i>出席</button>
+</nav>
+
+<div class="overlay" id="cal-overlay" onclick="closeCalSheet(event)">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-title" id="cal-sheet-title"></div>
+    <div id="cal-sheet-body"></div>
+    <button class="sh-close" onclick="closeCalSheet()">閉じる</button>
+  </div>
+</div>
+
+<div class="dialog-bg" id="dlg-bg">
+  <div class="dialog">
+    <div class="dlg-title" id="dlg-title"></div>
+    <div class="dlg-sub" id="dlg-sub"></div>
+    <div class="dlg-btns" id="dlg-btns">
+      <button class="dlg-btn dlg-no" onclick="closeDlg(false)">いいえ</button>
+      <button class="dlg-btn dlg-yes" onclick="closeDlg(true)">はい ✓</button>
+    </div>
+    <button class="dlg-undo" id="dlg-undo" style="display:none" onclick="closeDlg('undo')">出席を取り消す</button>
+  </div>
+</div>
+
+<script>
+const SHEET_ID = '1FEAlmLlGvrKvwpAPJZB2pB0Z1RhVvnGqrrEjrNRUi2A';
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit?gid=1793831840#gid=1793831840';
+const PROXY = 'https://corsproxy.io/?';
+const GID_SUBJECTS = '1027770274';
+const GID_EVENTS = '1793831840';
+const ROOMS = ['301','302','401','501','601','701','801'];
+const HOURS = [9,10,11,12,13,14,15,16];
+const WDAYS = ['日','月','火','水','木','金','土'];
+
+const DEF_SUBJECTS = ['現代の国語','言語文化','地理総合','歴史総合','数学Ⅰ','科学と人間生活','体育①','保険①','英語コミュⅠ','情報Ⅰ','総合探求①','キャリ教基'];
+const DEF_EVENTS = [
+  {date:'2026-04-01',name:'スタートアップセミナー',memo:'',units:2,status:'参加済み'},
+  {date:'2026-04-01',name:'進路ガイダンス',memo:'',units:2,status:'参加済み'},
+  {date:'2026-04-06',name:'入学式',memo:'',units:1,status:'参加済み'},
+  {date:'2026-04-24',name:'BBQ',memo:'',units:2,status:'参加済み'},
+  {date:'2026-05-22',name:'動物園遠足',memo:'',units:2,status:'ー'},
+  {date:'2026-05-30',name:'野球観戦',memo:'',units:3,status:'ー'},
+  {date:'2026-06-29',name:'ASU★FES',memo:'',units:3,status:'参加予定'},
+  {date:'2026-07-17',name:'ビューティーショー',memo:'',units:2,status:'ー'},
+  {date:'2026-07-28',name:'陶芸教室',memo:'',units:2,status:'ー'},
+  {date:'2026-08-07',name:'きずなオリンピック',memo:'',units:3,status:'ー'},
+  {date:'2026-09-14',name:'前期終業式',memo:'',units:2,status:'参加予定'},
+  {date:'2026-09-15',name:'三幸フェスティバル見学',memo:'',units:2,status:'ー'},
+  {date:'2026-10-01',name:'後期始業式',memo:'',units:2,status:'参加予定'},
+  {date:'2026-10-19',name:'救急蘇生員講習会',memo:'',units:2,status:'ー'},
+  {date:'2026-10-30',name:'ハロウィン清掃',memo:'',units:2,status:'ー'},
+  {date:'2026-11-09',name:'文化祭準備日',memo:'',units:2,status:'参加予定'},
+  {date:'2026-11-10',name:'文化祭1日目',memo:'',units:3,status:'参加予定'},
+  {date:'2026-11-11',name:'文化祭2日目',memo:'',units:3,status:'参加予定'},
+  {date:'2026-12-11',name:'ボウリング大会',memo:'2000円',units:2,status:'参加予定'},
+  {date:'2026-12-25',name:'大掃除',memo:'',units:3,status:'参加予定'},
+  {date:'2027-01-08',name:'太宰府天満宮参拝',memo:'',units:2,status:'ー'},
+  {date:'2027-01-22',name:'DVD鑑賞会',memo:'',units:3,status:'参加予定'},
+  {date:'2027-02-12',name:'いちご狩り',memo:'3500円',units:2,status:'ー'},
+  {date:'2027-02-22',name:'後期終業式',memo:'福岡市民ホール',units:2,status:'参加予定'},
+  {date:'2027-03-02',name:'在校生HR',memo:'どちらか1日',units:2,status:'参加予定'},
+  {date:'2027-03-03',name:'在校生HR',memo:'どちらか1日',units:2,status:'参加予定'},
+  {date:'2027-03-08',name:'後期卒業式',memo:'福岡市民ホール',units:2,status:'参加予定'}
+];
+
+let state = JSON.parse(localStorage.getItem('school_v10') || 'null') || {dates:[],data:{},subjects:[],events:[],lastUpdated:null};
+if (!state.subjects || !state.subjects.length) state.subjects = DEF_SUBJECTS;
+if (!state.events || !state.events.length) state.events = DEF_EVENTS;
+
+let curPage = 'today', calY = 0, calM = 0, dlgKey = null, dlgH = null, calSheetKey = null;
+
+function save() { try { localStorage.setItem('school_v10', JSON.stringify(state)); } catch(e) {} }
+function dateKey(d) { return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); }
+function fmtMD(s) { const p = s.split('-'); return parseInt(p[1]) + '月' + parseInt(p[2]) + '日'; }
+function wday(s) { return WDAYS[new Date(s + 'T00:00:00').getDay()]; }
+function nowD() { return new Date(); }
+
+function showPage(p) {
+  curPage = p;
+  ['today','tmrw','cal','events','attend'].forEach(function(id) {
+    document.getElementById('page-' + id).classList.toggle('active', id === p);
+    document.getElementById('nav-' + id).classList.toggle('active', id === p);
+  });
+  if (p === 'today') renderDay('today');
+  else if (p === 'tmrw') renderDay('tmrw');
+  else if (p === 'cal') renderCal();
+  else if (p === 'events') renderEvents();
+  else renderAttend();
+}
+
+function renderDay(which) {
+  var today = nowD();
+  var target = new Date(today);
+  if (which === 'tmrw') target.setDate(target.getDate() + 1);
+  var key = dateKey(target);
+  var con = document.getElementById('page-' + which);
+  var nowH = today.getHours();
+  var html = '<div class="day-hero"><div class="hero-label">' + (which === 'today' ? 'TODAY · 今日' : 'TOMORROW · 明日') + '</div><div class="hero-date">' + fmtMD(key) + '（' + wday(key) + '）</div></div>';
+
+  var dayEvts = state.events.filter(function(e) { return e.date === key; });
+  if (dayEvts.length) {
+    html += '<div class="sec">行事</div>';
+    dayEvts.forEach(function(e) {
+      var bc = e.status === '参加済み' ? 'b-joined' : e.status === '参加予定' ? 'b-planned' : 'b-none';
+      var rc = e.status === '参加済み' ? ' joined' : e.status === '参加予定' ? ' planned' : '';
+      html += '<div class="evcard' + rc + '"><i class="ti ti-star" style="font-size:16px;color:var(--warn);flex-shrink:0;margin-top:3px"></i><div class="ev-info"><div class="ev-name">' + e.name + '</div><div class="ev-meta">' + (e.memo ? e.memo + '・' : '') + e.units + 'コマ</div></div><span class="ev-badge ' + bc + '">' + e.status + '</span></div>';
+    });
+  }
+
+  var dayData = state.data[key];
+  var classes = dayData ? HOURS.filter(function(h) { return dayData[h] && dayData[h].subject; }) : [];
+  if (!classes.length) {
+    if (!dayEvts.length) html += '<div class="empty"><i class="ti ti-calendar-off"></i><p>授業が登録されていません<br><span style="font-size:12px">カレンダーの日付をタップして登録できます</span></p></div>';
+    con.innerHTML = html;
+    return;
+  }
+
+  var past = which === 'today' ? classes.filter(function(h) { return h < nowH; }) : [];
+  var upcoming = which === 'today' ? classes.filter(function(h) { return h >= nowH; }) : classes;
+
+  if (upcoming.length) {
+    html += '<div class="sec">' + (which === 'today' && past.length ? 'これから' : '授業') + '</div>';
+    upcoming.forEach(function(h) {
+      var s = dayData[h]; var isCur = which === 'today' && h === nowH; var att = s.attended;
+      var tap = which === 'today' ? 'onclick="openDlg(\'' + key + '\',' + h + ')"' : 'style="cursor:default"';
+      html += '<div class="lcard' + (isCur ? ' current' : '') + (att ? ' attended' : '') + '" ' + tap + '><span class="l-time">' + h + ':00</span><span class="l-name">' + s.subject + '</span>' + (s.room ? '<span class="l-room">' + s.room + '</span>' : '') + (isCur ? '<span class="now-chip">NOW</span>' : '') + (att ? '<i class="ti ti-check att-mark"></i>' : '') + '</div>';
+    });
+  }
+  if (past.length) {
+    html += '<div class="sec" style="margin-top:1.25rem">終わった授業</div>';
+    past.forEach(function(h) {
+      var s = dayData[h]; var att = s.attended;
+      html += '<div class="lcard faded" onclick="openDlg(\'' + key + '\',' + h + ')"><span class="l-time">' + h + ':00</span><span class="l-name">' + s.subject + '</span>' + (s.room ? '<span class="l-room">' + s.room + '</span>' : '') + (att ? '<i class="ti ti-check att-mark"></i>' : '') + '</div>';
+    });
+  }
+  con.innerHTML = html;
+}
+
+function openDlg(key, h) {
+  dlgKey = key; dlgH = h;
+  var s = state.data[key][h]; var att = s.attended;
+  document.getElementById('dlg-title').textContent = h + ':00　' + s.subject;
+  document.getElementById('dlg-sub').textContent = att ? '出席済みとして記録されています。' : 'この授業に出席しましたか？';
+  document.getElementById('dlg-btns').style.display = att ? 'none' : 'flex';
+  document.getElementById('dlg-undo').style.display = att ? 'block' : 'none';
+  document.getElementById('dlg-bg').classList.add('open');
+}
+function closeDlg(result) {
+  document.getElementById('dlg-bg').classList.remove('open');
+  if (result === true || result === 'undo') {
+    state.data[dlgKey][dlgH].attended = (result === true);
+    save(); renderDay('today');
+    if (curPage === 'attend') renderAttend();
+    renderCal();
+  }
+  dlgKey = null; dlgH = null;
+}
+
+function renderEvents() {
+  var con = document.getElementById('page-events');
+  var today = dateKey(nowD());
+  var upcoming = state.events.filter(function(e) { return e.date >= today; }).sort(function(a,b) { return a.date.localeCompare(b.date); });
+  var past = state.events.filter(function(e) { return e.date < today; }).sort(function(a,b) { return b.date.localeCompare(a.date); });
+  function mkEv(e, dim) {
+    var p = e.date.split('-');
+    var bc = e.status === '参加済み' ? 'b-joined' : e.status === '参加予定' ? 'b-planned' : 'b-none';
+    var rc = e.status === '参加済み' ? ' joined' : e.status === '参加予定' ? ' planned' : '';
+    return '<div class="evcard' + rc + '"' + (dim ? ' style="opacity:.45"' : '') + '><div class="ev-date"><div class="ev-mo">' + parseInt(p[1]) + '月</div><div class="ev-d">' + parseInt(p[2]) + '</div><div class="ev-wd">' + wday(e.date) + '</div></div><div class="ev-info"><div class="ev-name">' + e.name + '</div><div class="ev-meta">' + (e.memo ? e.memo + '・' : '') + e.units + 'コマ</div></div><span class="ev-badge ' + bc + '">' + e.status + '</span></div>';
+  }
+  var html = '<div class="sec">これからの行事</div>';
+  if (!upcoming.length) html += '<div style="font-size:13px;color:var(--text3);padding:1rem 0">今後の行事はありません</div>';
+  upcoming.forEach(function(e) { html += mkEv(e, false); });
+  if (past.length) { html += '<div class="sec" style="margin-top:1.5rem">過去の行事</div>'; past.forEach(function(e) { html += mkEv(e, true); }); }
+  con.innerHTML = html;
+}
+
+function calMove(d) { calM += d; if (calM > 11) { calM = 0; calY++; } else if (calM < 0) { calM = 11; calY--; } renderCal(); }
+function renderCal() {
+  var todayKey = dateKey(nowD());
+  document.getElementById('cal-mon').textContent = calY + '年' + (calM + 1) + '月';
+  var grid = document.getElementById('cal-grid');
+  grid.querySelectorAll('.cal-cell').forEach(function(c) { c.remove(); });
+  var first = new Date(calY, calM, 1);
+  var dim = new Date(calY, calM + 1, 0).getDate();
+  var prev = new Date(calY, calM, 0).getDate();
+  var cells = [];
+  for (var i = first.getDay() - 1; i >= 0; i--) cells.push({d: prev - i, mo: calM - 1, other: true});
+  for (var d = 1; d <= dim; d++) cells.push({d: d, mo: calM, other: false});
+  var rem = (7 - cells.length % 7) % 7;
+  for (var d = 1; d <= rem; d++) cells.push({d: d, mo: calM + 1, other: true});
+  cells.forEach(function(item) {
+    var m = ((item.mo % 12) + 12) % 12;
+    var y = calY + (item.mo < 0 ? -1 : item.mo > 11 ? 1 : 0);
+    var key = y + '-' + String(m + 1).padStart(2,'0') + '-' + String(item.d).padStart(2,'0');
+    var hasL = !item.other && state.data[key] && HOURS.some(function(h) { return state.data[key][h] && state.data[key][h].subject; });
+    var hasE = !item.other && state.events.some(function(e) { return e.date === key; });
+    var isT = !item.other && key === todayKey;
+    var cell = document.createElement('div');
+    cell.className = 'cal-cell' + (item.other ? ' other' : '') + (isT ? ' today-c' : '');
+    cell.innerHTML = '<div class="cal-num">' + item.d + '</div>' + (hasL ? '<div class="pip lesson">授業</div>' : '') + (hasE ? '<div class="pip event">行事</div>' : '');
+    if (!item.other) cell.onclick = (function(k) { return function() { openCalSheet(k); }; })(key);
+    grid.appendChild(cell);
+  });
+}
+
+function openCalSheet(key) {
+  calSheetKey = key;
+  if (!state.data[key]) {
+    state.data[key] = {};
+    HOURS.forEach(function(h) { state.data[key][h] = {subject:'', room:'', attended:false}; });
+    if (!state.dates.includes(key)) { state.dates.push(key); state.dates.sort(); }
+    save();
+  }
+  document.getElementById('cal-sheet-title').textContent = fmtMD(key) + '（' + wday(key) + '）';
+  renderCalSheetBody(key);
+  document.getElementById('cal-overlay').classList.add('open');
+}
+
+function renderCalSheetBody(key) {
+  var dayData = state.data[key];
+  var evts = state.events.filter(function(e) { return e.date === key; });
+  var html = '';
+  if (evts.length) {
+    html += '<div class="sec" style="margin-top:0">行事</div>';
+    evts.forEach(function(e) {
+      html += '<div class="sh-ev"><i class="ti ti-star" style="font-size:14px;color:var(--warn);flex-shrink:0"></i><span style="flex:1;font-size:14px;font-weight:500">' + e.name + '</span>' + (e.memo ? '<span style="font-size:12px;color:var(--text2)">' + e.memo + '</span>' : '') + '</div>';
+    });
+  }
+  html += '<div class="sec" style="' + (evts.length ? '' : 'margin-top:0') + '">授業を登録</div>';
+  HOURS.forEach(function(h) {
+    var slot = dayData[h] || {subject:'', room:'', attended:false};
+    var has = !!slot.subject;
+    var subjOpts = '<option value="">（なし）</option>' + state.subjects.map(function(s) { return '<option value="' + s + '"' + (slot.subject === s ? ' selected' : '') + '>' + s + '</option>'; }).join('');
+    var roomOpts = '<option value="">　</option>' + ROOMS.map(function(r) { return '<option value="' + r + '"' + (slot.room === r ? ' selected' : '') + '>' + r + '</option>'; }).join('');
+    html += '<div class="reg-slot"><span class="reg-time">' + h + ':00</span><div class="reg-card' + (has ? ' has' : '') + '" id="rc-' + h + '"><select id="ss-' + h + '" onchange="onSubjChange(' + h + ')" aria-label="' + h + '時の科目">' + subjOpts + '</select>' + (has ? '<select class="rsel" id="rs-' + h + '" onchange="onRoomChange(' + h + ')" aria-label="教室">' + roomOpts + '</select><button class="clr-btn" onclick="clearSlot(' + h + ')" aria-label="クリア"><i class="ti ti-x" style="font-size:12px"></i></button>' : '') + '</div></div>';
+  });
+  html += '<div class="bottom-actions"><button class="sync-btn" onclick="syncFromSheet()" id="sync-btn-sh"><i class="ti ti-refresh" style="font-size:15px"></i> 科目リスト・行事を更新</button><a class="sheet-link-btn" href="' + SHEET_URL + '" target="_blank" rel="noopener" aria-label="スプレッドシートを開く"><i class="ti ti-table" style="font-size:20px"></i></a><div class="last-sync" id="last-sync-txt"></div></div>';
+  document.getElementById('cal-sheet-body').innerHTML = html;
+  renderLastSync();
+}
+
+function onSubjChange(h) {
+  var val = document.getElementById('ss-' + h).value;
+  if (!state.data[calSheetKey][h]) state.data[calSheetKey][h] = {subject:'', room:'', attended:false};
+  state.data[calSheetKey][h].subject = val;
+  if (!val) { state.data[calSheetKey][h].room = ''; state.data[calSheetKey][h].attended = false; }
+  save(); renderCalSheetBody(calSheetKey);
+}
+function onRoomChange(h) {
+  state.data[calSheetKey][h].room = document.getElementById('rs-' + h).value;
+  save();
+}
+function clearSlot(h) {
+  state.data[calSheetKey][h] = {subject:'', room:'', attended:false};
+  save(); renderCalSheetBody(calSheetKey);
+}
+function closeCalSheet(e) {
+  if (!e || e.target === document.getElementById('cal-overlay')) {
+    document.getElementById('cal-overlay').classList.remove('open');
+    renderCal();
+    if (curPage === 'today') renderDay('today');
+    if (curPage === 'tmrw') renderDay('tmrw');
+    calSheetKey = null;
+  }
+}
+
+function renderAttend() {
+  var con = document.getElementById('page-attend');
+  var counts = {};
+  state.subjects.forEach(function(s) { counts[s] = 0; });
+  var total = 0;
+  Object.values(state.data).forEach(function(day) {
+    HOURS.forEach(function(h) {
+      var sl = day[h];
+      if (sl && sl.subject && sl.attended) { counts[sl.subject] = (counts[sl.subject] || 0) + 1; total++; }
+    });
+  });
+  var html = '<div class="sec" style="margin-top:0">出席コマ数</div><div class="att-total"><div class="att-total-num">' + total + '</div><div class="att-total-sub">合計出席コマ数</div></div>';
+  var active = state.subjects.filter(function(s) { return counts[s] > 0; }).sort(function(a,b) { return counts[b] - counts[a]; });
+  var inactive = state.subjects.filter(function(s) { return !counts[s]; });
+  active.forEach(function(s) {
+    html += '<div class="att-card"><span class="att-name">' + s + '</span><div style="text-align:right"><div class="att-count">' + counts[s] + '</div><div class="att-unit">コマ</div></div></div>';
+  });
+  if (inactive.length) {
+    if (active.length) html += '<div class="sec" style="margin-top:1.25rem">未出席</div>';
+    inactive.forEach(function(s) {
+      html += '<div class="att-card" style="opacity:.4"><span class="att-name">' + s + '</span><div style="text-align:right"><div class="att-count" style="font-size:18px;color:var(--text3)">0</div><div class="att-unit">コマ</div></div></div>';
+    });
+  }
+  con.innerHTML = html;
+}
+
+function renderLastSync() {
+  var el = document.getElementById('last-sync-txt'); if (!el) return;
+  if (state.lastUpdated) { var d = new Date(state.lastUpdated); el.textContent = '最終更新: ' + d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0'); }
+  else el.textContent = 'まだ更新していません（初期データ表示中）';
+}
+
+async function syncFromSheet() {
+  var btn = document.getElementById('sync-btn-sh'); if (!btn) return;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-refresh spinning" style="font-size:15px"></i> 読み込み中…';
+  try {
+    var r1 = await fetch(PROXY + encodeURIComponent('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID_SUBJECTS));
+    var r2 = await fetch(PROXY + encodeURIComponent('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID_EVENTS));
+    var csv1 = await r1.text(); var csv2 = await r2.text();
+    var ns = extractSubjects(parseCSV(csv1));
+    var ne = extractEvents(parseCSV(csv2));
+    if (ns.length) state.subjects = ns;
+    if (ne.length) state.events = ne;
+    state.lastUpdated = new Date().toISOString();
+    save(); renderLastSync();
+    btn.innerHTML = '<i class="ti ti-check" style="font-size:15px"></i> 更新しました！';
+    if (curPage === 'events') renderEvents();
+    renderCal();
+  } catch(err) {
+    btn.innerHTML = '<i class="ti ti-alert-circle" style="font-size:15px"></i> 失敗。もう一度お試しください';
+  }
+  setTimeout(function() { btn.disabled = false; btn.innerHTML = '<i class="ti ti-refresh" style="font-size:15px"></i> 科目リスト・行事を更新'; }, 3000);
+}
+
+function parseCSV(text) {
+  return text.split('\n').map(function(line) {
+    var cells = [], cur = '', inQ = false;
+    for (var i = 0; i < line.length; i++) {
+      if (line[i] === '"') inQ = !inQ;
+      else if (line[i] === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
+      else cur += line[i];
+    }
+    cells.push(cur.trim()); return cells;
+  });
+}
+function extractSubjects(rows) {
+  var s = [], in_ = false;
+  for (var i = 0; i < rows.length; i++) {
+    var c = rows[i][0] || '';
+    if (c === '履修科目') { in_ = true; continue; }
+    if (in_) { if (!c) break; if (!s.includes(c)) s.push(c); }
+  }
+  return s;
+}
+function extractEvents(rows) {
+  var evs = [], in_ = false;
+  for (var i = 0; i < rows.length; i++) {
+    var c0 = rows[i][0] || '';
+    if (c0 === '実施月日') { in_ = true; continue; }
+    if (in_ && c0 && rows[i][2]) {
+      var date = parseJpDate(c0); if (!date) continue;
+      evs.push({date:date, name:rows[i][2]||'', memo:rows[i][3]||'', units:parseInt(rows[i][4])||0, status:rows[i][5]||'ー'});
+    }
+  }
+  return evs;
+}
+function parseJpDate(s) {
+  var m = s.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if (m) return m[1] + '-' + m[2].padStart(2,'0') + '-' + m[3].padStart(2,'0');
+  var m2 = s.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+  if (m2) return m2[1] + '-' + m2[2].padStart(2,'0') + '-' + m2[3].padStart(2,'0');
+  return null;
+}
+
+var t = nowD(); calY = t.getFullYear(); calM = t.getMonth();
+renderDay('today');
+</script>
+</body>
+</html>
