@@ -147,6 +147,9 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
       <div class="cal-mon" id="cal-mon"></div>
       <button class="cal-arr" onclick="calMove(1)" aria-label="次の月"><i class="ti ti-chevron-right" style="font-size:18px"></i></button>
     </div>
+    <div style="text-align:center;margin-bottom:12px;">
+      <button onclick="openAttendanceSheet()" style="padding:6px 16px;border:1px solid var(--border2);border-radius:20px;background:var(--surface);color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;box-shadow:var(--shadow);display:inline-flex;align-items:center;gap:4px;"><i class="ti ti-checkbox" style="font-size:15px;color:var(--accent)"></i>出席数を確認</button>
+    </div>
     <div class="cal-grid" id="cal-grid">
       <div class="cal-wd">日</div><div class="cal-wd">月</div><div class="cal-wd">火</div>
       <div class="cal-wd">水</div><div class="cal-wd">木</div><div class="cal-wd">金</div><div class="cal-wd">土</div>
@@ -170,6 +173,15 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
     <div class="sh-title" id="cal-sheet-title"></div>
     <div id="cal-sheet-body"></div>
     <button class="sh-close" onclick="closeCalSheet()">閉じる</button>
+  </div>
+</div>
+
+<div class="overlay" id="att-overlay" onclick="closeAttSheet(event)">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-title">科目別 出席数</div>
+    <div id="att-sheet-body"></div>
+    <button class="sh-close" onclick="closeAttSheet()">閉じる</button>
   </div>
 </div>
 
@@ -197,28 +209,10 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 </div>
 
 <script>
-var SHEET_ID = '1FEAlmLlGvrKvwpAPJZB2pB0Z1RhVvnGqrrEjrNRUi2A';
-var SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit?gid=1793831840#gid=1793831840';
-var GID_SUBJECTS = '1793831840';
-var GID_EVENTS = '1027770274';
-var PROXIES = [
-  function(u){return 'https://corsproxy.io/?' + encodeURIComponent(u);},
-  function(u){return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u);},
-  function(u){return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u);}
-];
-async function fetchWithFallback(url) {
-  var lastErr;
-  for (var i = 0; i < PROXIES.length; i++) {
-    try {
-      var res = await fetch(PROXIES[i](url));
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      var text = await res.text();
-      if (!text || text.length < 10) throw new Error('empty');
-      return text;
-    } catch(e) { lastErr = e; }
-  }
-  throw lastErr;
-}
+// 🟩 GAS WebアプリURLを設定
+var API_URL = 'https://script.google.com/macros/s/AKfycbxXGY5THWVWd3ymWLmiILYH28CiUW4wQiDF6h5B_kfVATRyff-Os-C8uW5mONmf3CvgQA/exec';
+var SHEET_URL = 'https://docs.google.com/spreadsheets/d/1FEAlmLlGvrKvwpAPJZB2pB0Z1RhVvnGqrrEjrNRUi2A/edit?gid=1793831840#gid=1793831840';
+
 var ROOMS = ['301','302','401','501','601','701','801'];
 var HOURS = [9,10,11,12,13,14,15,16];
 var WDAYS = ['日','月','火','水','木','金','土'];
@@ -241,7 +235,7 @@ var DEF_EVENTS = [
   {date:'2026-10-30',name:'ハロウィン清掃',memo:'',units:2,status:'ー'},
   {date:'2026-11-09',name:'文化祭準備日',memo:'',units:2,status:'参加予定'},
   {date:'2026-11-10',name:'文化祭1日目',memo:'',units:3,status:'参加予定'},
-  {date:'2026-11-11',name:'文化祭2日目',memo:'',units:3,status:'参加予定'},
+  {date:'2026-11-11',name:'文化祭2日目',memo:',units:3,status:'参加予定'},
   {date:'2026-12-11',name:'ボウリング大会',memo:'2000円',units:2,status:'参加予定'},
   {date:'2026-12-25',name:'大掃除',memo:'',units:3,status:'参加予定'},
   {date:'2027-01-08',name:'太宰府天満宮参拝',memo:'',units:2,status:'ー'},
@@ -334,11 +328,14 @@ function openDlg(key, h) {
   document.getElementById('dlg-undo').style.display = att ? 'block' : 'none';
   document.getElementById('dlg-bg').classList.add('open');
 }
+
 function closeDlg(result) {
   document.getElementById('dlg-bg').classList.remove('open');
   if (result === true || result === 'undo') {
     state.data[dlgKey][dlgH].attended = (result === true);
     save(); renderDay('today'); renderCal();
+    // 🟩 出席チェックの変更をGASにリアルタイム保存
+    postRecordToGAS('save', dlgKey, dlgH);
   }
   dlgKey = null; dlgH = null;
 }
@@ -428,17 +425,33 @@ function onSubjChange(h) {
   var val = document.getElementById('ss-' + h).value;
   if (!state.data[calSheetKey][h]) state.data[calSheetKey][h] = {subject:'', room:'', attended:false};
   state.data[calSheetKey][h].subject = val;
-  if (!val) { state.data[calSheetKey][h].room = ''; state.data[calSheetKey][h].attended = false; }
-  save(); renderCalSheetBody(calSheetKey);
+  if (!val) { 
+    state.data[calSheetKey][h].room = ''; 
+    state.data[calSheetKey][h].attended = false; 
+    save(); renderCalSheetBody(calSheetKey);
+    // 🟩 科目を空にした場合はGASから行を削除
+    postRecordToGAS('delete', calSheetKey, h);
+  } else {
+    save(); renderCalSheetBody(calSheetKey);
+    // 🟩 科目を登録した場合はGASへ即時保存
+    postRecordToGAS('save', calSheetKey, h);
+  }
 }
+
 function onRoomChange(h) {
   state.data[calSheetKey][h].room = document.getElementById('rs-' + h).value;
   save();
+  // 🟩 教室変更もGASに即時保存
+  postRecordToGAS('save', calSheetKey, h);
 }
+
 function clearSlot(h) {
   state.data[calSheetKey][h] = {subject:'', room:'', attended:false};
   save(); renderCalSheetBody(calSheetKey);
+  // 🟩 クリアボタンを押した場合はGASから行を削除
+  postRecordToGAS('delete', calSheetKey, h);
 }
+
 function closeCalSheet(e) {
   if (!e || e.target === document.getElementById('cal-overlay')) {
     document.getElementById('cal-overlay').classList.remove('open');
@@ -446,6 +459,42 @@ function closeCalSheet(e) {
     if (curPage === 'today') renderDay('today');
     if (curPage === 'tmrw') renderDay('tmrw');
     calSheetKey = null;
+  }
+}
+
+// 📊 科目別出席数シートを開く関数を追加
+function openAttendanceSheet() {
+  var counts = {};
+  state.subjects.forEach(function(s) { counts[s] = 0; });
+  
+  Object.keys(state.data).forEach(function(date) {
+    var dayData = state.data[date];
+    if (dayData) {
+      Object.keys(dayData).forEach(function(h) {
+        var slot = dayData[h];
+        if (slot && slot.subject && slot.attended) {
+          if (!counts[slot.subject]) counts[slot.subject] = 0;
+          counts[slot.subject]++;
+        }
+      });
+    }
+  });
+  
+  var html = '<div class="set-group" style="margin-top:0; max-height: 50dvh; overflow-y: auto;">';
+  state.subjects.forEach(function(s) {
+    var c = counts[s] || 0;
+    html += '<div class="set-row" style="cursor:default;pointer-events:none;"><div class="set-row-body"><div class="set-row-title">' + s + '</div></div><span style="font-size:15px;font-weight:700;color:var(--accent);">' + c + ' コマ</span></div>';
+  });
+  html += '</div>';
+  
+  document.getElementById('att-sheet-body').innerHTML = html;
+  document.getElementById('att-overlay').classList.add('open');
+}
+
+function closeAttSheet(e) {
+  if (!e || e.target === document.getElementById('att-overlay')) {
+    document.getElementById('att-overlay').classList.remove('remove');
+    document.getElementById('att-overlay').classList.remove('open');
   }
 }
 
@@ -457,7 +506,7 @@ function renderSettings() {
   } else {
     lastSync = 'まだ更新していません（初期データ表示中）';
   }
-  var html = '<div class="sec">スプレッドシート連携</div><div class="set-group"><div class="set-row" onclick="syncFromSheet()"><i class="ti ti-refresh set-row-icon" id="sync-icon"></i><div class="set-row-body"><div class="set-row-title">科目リスト・行事を更新</div><div class="set-row-sub">スプシの内容を読み込む</div></div><i class="ti ti-chevron-right set-row-arrow"></i></div><a class="set-row" href="' + SHEET_URL + '" target="_blank" rel="noopener" style="text-decoration:none"><i class="ti ti-table set-row-icon"></i><div class="set-row-body"><div class="set-row-title">スプレッドシートを開く</div><div class="set-row-sub">Googleスプレッドシートへ</div></div><i class="ti ti-external-link set-row-arrow"></i></a></div><div class="set-last-sync" id="set-last-sync">' + lastSync + '</div><div class="sec" style="margin-top:1.5rem">データ管理</div><div class="set-group"><div class="set-row" onclick="openResetDlg()"><i class="ti ti-trash set-row-icon danger"></i><div class="set-row-body"><div class="set-row-title danger">データをリセット</div><div class="set-row-sub">登録した授業・出席記録を全て削除</div></div><i class="ti ti-chevron-right set-row-arrow"></i></div></div>';
+  var html = '<div class="sec">スプレッドシート連携</div><div class="set-group"><div class="set-row" onclick="syncFromSheet()"><i class="ti ti-refresh set-row-icon" id="sync-icon"></i><div class="set-row-body"><div class="set-row-title">スプシからデータを読込</div><div class="set-row-sub">科目・行事・登録済み授業を同期</div></div><i class="ti ti-chevron-right set-row-arrow"></i></div><a class="set-row" href="' + SHEET_URL + '" target="_blank" rel="noopener" style="text-decoration:none"><i class="ti ti-table set-row-icon"></i><div class="set-row-body"><div class="set-row-title">スプレッドシートを開く</div><div class="set-row-sub">Googleスプレッドシートへ</div></div><i class="ti ti-external-link set-row-arrow"></i></a></div><div class="set-last-sync" id="set-last-sync">' + lastSync + '</div><div class="sec" style="margin-top:1.5rem">データ管理</div><div class="set-group"><div class="set-row" onclick="openResetDlg()"><i class="ti ti-trash set-row-icon danger"></i><div class="set-row-body"><div class="set-row-title danger">データをリセット</div><div class="set-row-sub">登録した授業・出席記録を全て削除</div></div><i class="ti ti-chevron-right set-row-arrow"></i></div></div>';
   document.getElementById('page-settings').innerHTML = html;
 }
 
@@ -477,20 +526,49 @@ function closeResetDlg(doReset) {
   }
 }
 
+// 🟩 GASからデータを読み込む関数 (GET)
 async function syncFromSheet() {
   var icon = document.getElementById('sync-icon');
   if (icon) { icon.className = 'ti ti-refresh set-row-icon spinning'; }
   try {
-    var csv1 = await fetchWithFallback('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID_SUBJECTS);
-    var csv2 = await fetchWithFallback('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID_EVENTS);
-    var ns = extractSubjects(parseCSV(csv1));
-    var ne = extractEvents(parseCSV(csv2));
-    if (ns.length) state.subjects = ns;
-    if (ne.length) state.events = ne;
+    var res = await fetch(API_URL + '?mode=all');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var data = await res.json();
+    
+    // 1. 科目リストの同期
+    if (data.subjects && data.subjects.length) state.subjects = data.subjects;
+    // 2. 行事リストの同期
+    if (data.events && data.events.length) state.events = data.events;
+    
+    // 3. 授業記録の同期 (アプリ内のデータ構造へ展開)
+    state.data = {};
+    state.dates = [];
+    if (data.records && data.records.length) {
+      data.records.forEach(function(r) {
+        if (!state.data[r.date]) {
+          state.data[r.date] = {};
+          HOURS.forEach(function(h) {
+            state.data[r.date][h] = {subject:'', room:'', attended:false};
+          });
+        }
+        state.data[r.date][r.hour] = {
+          subject: r.subject,
+          room: r.room,
+          attended: r.attended
+        };
+        if (!state.dates.includes(r.date)) {
+          state.dates.push(r.date);
+        }
+      });
+      state.dates.sort();
+    }
+    
     state.lastUpdated = new Date().toISOString();
     save();
     if (curPage === 'events') renderEvents();
     renderCal();
+    if (curPage === 'today') renderDay('today');
+    if (curPage === 'tmrw') renderDay('tmrw');
     renderSettings();
   } catch(err) {
     if (icon) { icon.className = 'ti ti-alert-circle set-row-icon'; }
@@ -499,44 +577,29 @@ async function syncFromSheet() {
   }
 }
 
-function parseCSV(text) {
-  return text.split('\n').map(function(line) {
-    var cells = [], cur = '', inQ = false;
-    for (var i = 0; i < line.length; i++) {
-      if (line[i] === '"') inQ = !inQ;
-      else if (line[i] === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
-      else cur += line[i];
+// 🟩 GASへデータを送信する共通関数 (POST)
+async function postRecordToGAS(action, key, h) {
+  var slot = state.data[key][h];
+  var payload = {
+    action: action,
+    data: {
+      date: key,
+      hour: Number(h),
+      subject: slot.subject || '',
+      room: slot.room || '',
+      attended: !!slot.attended
     }
-    cells.push(cur.trim()); return cells;
-  });
-}
-function extractSubjects(rows) {
-  var s = [], in_ = false;
-  for (var i = 0; i < rows.length; i++) {
-    var c = rows[i][0] || '';
-    if (c === '履修科目') { in_ = true; continue; }
-    if (in_) { if (!c) break; if (!s.includes(c)) s.push(c); }
+  };
+  
+  try {
+    // プレフライト(OPTIONS)制限を回避するため敢えてヘッダーは未設定で送信
+    await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {
+    console.error('GAS同期エラー:', e);
   }
-  return s;
-}
-function extractEvents(rows) {
-  var evs = [], in_ = false;
-  for (var i = 0; i < rows.length; i++) {
-    var c0 = rows[i][0] || '';
-    if (c0 === '実施月日') { in_ = true; continue; }
-    if (in_ && c0 && rows[i][2]) {
-      var date = parseJpDate(c0); if (!date) continue;
-      evs.push({date:date, name:rows[i][2]||'', memo:rows[i][3]||'', units:parseInt(rows[i][4])||0, status:rows[i][5]||'ー'});
-    }
-  }
-  return evs;
-}
-function parseJpDate(s) {
-  var m = s.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
-  if (m) return m[1] + '-' + m[2].padStart(2,'0') + '-' + m[3].padStart(2,'0');
-  var m2 = s.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-  if (m2) return m2[1] + '-' + m2[2].padStart(2,'0') + '-' + m2[3].padStart(2,'0');
-  return null;
 }
 
 var t = nowD(); calY = t.getFullYear(); calM = t.getMonth();
