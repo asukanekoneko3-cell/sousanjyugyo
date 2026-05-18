@@ -235,7 +235,7 @@ var DEF_EVENTS = [
   {date:'2026-10-30',name:'ハロウィン清掃',memo:'',units:2,status:'ー'},
   {date:'2026-11-09',name:'文化祭準備日',memo:'',units:2,status:'参加予定'},
   {date:'2026-11-10',name:'文化祭1日目',memo:'',units:3,status:'参加予定'},
-  {date:'2026-11-11',name:'文化祭2日目',memo:',units:3,status:'参加予定'},
+  {date:'2026-11-11',name:'文化祭2日目',memo:'',units:3,status:'参加予定'}, // 🟩 バグ修正（閉じのシングルクォーテーションを補正）
   {date:'2026-12-11',name:'ボウリング大会',memo:'2000円',units:2,status:'参加予定'},
   {date:'2026-12-25',name:'大掃除',memo:'',units:3,status:'参加予定'},
   {date:'2027-01-08',name:'太宰府天満宮参拝',memo:'',units:2,status:'ー'},
@@ -493,7 +493,7 @@ function openAttendanceSheet() {
 
 function closeAttSheet(e) {
   if (!e || e.target === document.getElementById('att-overlay')) {
-    document.getElementById('att-overlay').classList.remove('remove');
+    // 🟩 不要なクラス削除行「remove('remove')」をきれいに削除
     document.getElementById('att-overlay').classList.remove('open');
   }
 }
