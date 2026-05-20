@@ -77,10 +77,13 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .b-joined{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-border)}
 .b-planned{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-border)}
 .b-none{background:var(--surface2);color:var(--text3);border-color:var(--border)}
-.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.cal-hdr{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px}
 .cal-mon{font-size:18px;font-weight:700}
 .cal-arr{width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);box-shadow:var(--shadow)}
-.cal-refresh{width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--accent-border);background:var(--accent-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--accent);box-shadow:var(--shadow);margin-left:8px;font-family:inherit;transition:background .1s}
+.cal-actions{display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
+.cal-action-btn{padding:6px 12px;border:1px solid var(--border2);border-radius:20px;background:var(--surface);color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;box-shadow:var(--shadow);display:inline-flex;align-items:center;gap:4px;font-family:inherit}
+.cal-action-btn:active{background:var(--surface2)}
+.cal-refresh{width:32px;height:32px;border-radius:var(--radius-sm);border:1px solid var(--accent-border);background:var(--accent-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--accent);box-shadow:var(--shadow);font-family:inherit;transition:background .1s;flex-shrink:0}
 .cal-refresh:active{background:var(--accent-border)}
 .cal-refresh .ti-refresh.spinning{animation:spin 1s linear infinite}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
@@ -96,6 +99,18 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .memo-input:focus{border-color:var(--accent-border);background:var(--surface)}
 .sh-register{width:100%;padding:13px;border:1px solid var(--accent-border);border-radius:var(--radius-sm);background:var(--accent-bg);color:var(--accent-text);font-size:15px;cursor:pointer;margin-top:12px;font-family:inherit;font-weight:700;transition:background .1s}
 .sh-register:active{background:var(--accent-border)}
+.curri-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.curri-hdr-title{font-size:16px;font-weight:700;color:var(--text)}
+.curri-refresh{width:32px;height:32px;border-radius:var(--radius-sm);border:1px solid var(--accent-border);background:var(--accent-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--accent);font-family:inherit}
+.curri-refresh:active{background:var(--accent-border)}
+.curri-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px}
+.curri-name{font-size:15px;font-weight:700;color:var(--accent-text);margin-bottom:8px}
+.curri-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--text2);margin-bottom:12px}
+.curri-meta strong{color:var(--text);font-size:14px;font-weight:700}
+.curri-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.curri-row:last-child{margin-bottom:0}
+.curri-row-label{font-size:12px;color:var(--text2);min-width:96px}
+.curri-sel{width:64px;padding:5px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;font-family:inherit;cursor:pointer;outline:none}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .cal-wd{text-align:center;font-size:11px;font-weight:500;color:var(--text3);padding:4px 0}
 .cal-cell{min-height:54px;border-radius:var(--radius-sm);padding:5px 3px;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:background .1s}
@@ -162,10 +177,11 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
       <button class="cal-arr" onclick="calMove(-1)" aria-label="前の月"><i class="ti ti-chevron-left" style="font-size:18px"></i></button>
       <div class="cal-mon" id="cal-mon"></div>
       <button class="cal-arr" onclick="calMove(1)" aria-label="次の月"><i class="ti ti-chevron-right" style="font-size:18px"></i></button>
-      <button class="cal-refresh" onclick="syncFromSheet()" aria-label="最新データに更新" id="cal-refresh-btn"><i class="ti ti-refresh" id="cal-refresh-icon" style="font-size:18px"></i></button>
     </div>
-    <div style="text-align:center;margin-bottom:12px;">
-      <button onclick="openAttendanceSheet()" style="padding:6px 16px;border:1px solid var(--border2);border-radius:20px;background:var(--surface);color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;box-shadow:var(--shadow);display:inline-flex;align-items:center;gap:4px;"><i class="ti ti-checkbox" style="font-size:15px;color:var(--accent)"></i>出席数を確認</button>
+    <div class="cal-actions">
+      <button class="cal-action-btn" onclick="openAttendanceSheet()"><i class="ti ti-checkbox" style="font-size:15px;color:var(--accent)"></i>出席数を確認</button>
+      <button class="cal-action-btn" onclick="openCurriculumSheet()"><i class="ti ti-book-2" style="font-size:15px;color:var(--accent)"></i>履修詳細</button>
+      <button class="cal-refresh" onclick="syncFromSheet()" aria-label="最新データに更新" id="cal-refresh-btn"><i class="ti ti-refresh" id="cal-refresh-icon" style="font-size:16px"></i></button>
     </div>
     <div class="cal-grid" id="cal-grid">
       <div class="cal-wd">日</div><div class="cal-wd">月</div><div class="cal-wd">火</div>
@@ -200,6 +216,18 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
     <div class="sh-title">科目別 出席数</div>
     <div id="att-sheet-body"></div>
     <button class="sh-close" onclick="closeAttSheet()">閉じる</button>
+  </div>
+</div>
+
+<div class="overlay" id="curri-overlay" onclick="closeCurriSheet(event)">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div class="curri-hdr">
+      <div class="curri-hdr-title">科目別の進捗</div>
+      <button class="curri-refresh" onclick="syncFromSheet()" aria-label="最新データに更新"><i class="ti ti-refresh" style="font-size:14px"></i></button>
+    </div>
+    <div id="curri-sheet-body"></div>
+    <button class="sh-close" onclick="closeCurriSheet()">閉じる</button>
   </div>
 </div>
 
@@ -265,10 +293,11 @@ var DEF_EVENTS = [
   {date:'2027-03-08',name:'後期卒業式',memo:'福岡市民ホール',units:2,status:'参加予定'}
 ];
 
-var state = JSON.parse(localStorage.getItem('school_v11') || 'null') || {dates:[],data:{},subjects:[],events:[],memos:{},lastUpdated:null};
+var state = JSON.parse(localStorage.getItem('school_v11') || 'null') || {dates:[],data:{},subjects:[],events:[],memos:{},curriculum:[],lastUpdated:null};
 if (!state.subjects || !state.subjects.length) state.subjects = DEF_SUBJECTS;
 if (!state.events || !state.events.length) state.events = DEF_EVENTS;
 if (!state.memos) state.memos = {}; // 🟩 メモを保持するオブジェクト{ 'YYYY-MM-DD': 'メモ文' }
+if (!state.curriculum) state.curriculum = []; // 🟩 履修進捗 [{name, units, scReq, scAct, rpReq, rpAct}, ...]
 
 var curPage = 'today', calY = 0, calM = 0, dlgKey = null, dlgH = null, calSheetKey = null;
 
@@ -594,6 +623,81 @@ function closeAttSheet(e) {
   }
 }
 
+// 🟩 履修詳細シートを開く
+function openCurriculumSheet() {
+  renderCurriBody();
+  document.getElementById('curri-overlay').classList.add('open');
+}
+
+function closeCurriSheet(e) {
+  if (!e || e.target === document.getElementById('curri-overlay')) {
+    document.getElementById('curri-overlay').classList.remove('open');
+  }
+}
+
+// 🟩 履修詳細の中身を描画
+function renderCurriBody() {
+  var box = document.getElementById('curri-sheet-body');
+  var list = state.curriculum || [];
+  if (!list.length) {
+    box.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:1rem 0;text-align:center;">履修データがありません<br><span style="font-size:12px">右上の更新ボタンを押してください</span></div>';
+    return;
+  }
+  var html = '';
+  list.forEach(function(it, idx) {
+    var scReq = Number(it.scReq) || 0;
+    var rpReq = Number(it.rpReq) || 0;
+    var scAct = Number(it.scAct) || 0;
+    var rpAct = Number(it.rpAct) || 0;
+    // プルダウンの選択肢: 0〜規定数 (実績が規定を超えていれば実績まで)
+    var scMax = Math.max(scReq, scAct);
+    var rpMax = Math.max(rpReq, rpAct);
+    var scOpts = '';
+    for (var i = 0; i <= scMax; i++) scOpts += '<option value="' + i + '"' + (i === scAct ? ' selected' : '') + '>' + i + '</option>';
+    var rpOpts = '';
+    for (var j = 0; j <= rpMax; j++) rpOpts += '<option value="' + j + '"' + (j === rpAct ? ' selected' : '') + '>' + j + '</option>';
+    html += '<div class="curri-card">' +
+      '<div class="curri-name">' + escHtml(it.name) + '</div>' +
+      '<div class="curri-meta">' +
+        '<span>単位: <strong>' + (it.units || 0) + '</strong></span>' +
+        '<span>スクーリング規定: <strong>' + scReq + '</strong></span>' +
+        '<span>レポート規定: <strong>' + rpReq + '</strong></span>' +
+      '</div>' +
+      '<div class="curri-row"><span class="curri-row-label">スクーリング実績</span>' +
+        '<select class="curri-sel" onchange="onCurriChange(' + idx + ',\'scAct\',this.value)">' + scOpts + '</select>' +
+      '</div>' +
+      '<div class="curri-row"><span class="curri-row-label">レポート実績</span>' +
+        '<select class="curri-sel" onchange="onCurriChange(' + idx + ',\'rpAct\',this.value)">' + rpOpts + '</select>' +
+      '</div>' +
+    '</div>';
+  });
+  box.innerHTML = html;
+}
+
+// 🟩 履修詳細の実績変更
+function onCurriChange(idx, field, val) {
+  if (!state.curriculum[idx]) return;
+  state.curriculum[idx][field] = Number(val);
+  save();
+  // GASへ即時保存
+  postCurriToGAS(state.curriculum[idx]);
+}
+
+// 🟩 履修詳細をGASへ送信
+async function postCurriToGAS(item) {
+  var payload = {
+    action: 'saveCurri',
+    data: {
+      name: item.name,
+      scAct: Number(item.scAct) || 0,
+      rpAct: Number(item.rpAct) || 0
+    }
+  };
+  try {
+    await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+  } catch(e) { console.error('履修GAS同期エラー:', e); }
+}
+
 function renderSettings() {
   var lastSync = '';
   if (state.lastUpdated) {
@@ -666,6 +770,11 @@ async function syncFromSheet(silent) {
     if (data.memos) {
       state.memos = data.memos;
     }
+
+    // 5. 🟩 履修詳細の同期
+    if (data.curriculum) {
+      state.curriculum = data.curriculum;
+    }
     
     state.lastUpdated = new Date().toISOString();
     save();
@@ -673,6 +782,10 @@ async function syncFromSheet(silent) {
     renderCal();
     if (curPage === 'today') renderDay('today');
     if (curPage === 'tmrw') renderDay('tmrw');
+    // 履修詳細シートが開いていたら再描画
+    if (document.getElementById('curri-overlay').classList.contains('open')) {
+      renderCurriBody();
+    }
     renderSettings();
   } catch(err) {
     if (icon) { icon.className = 'ti ti-alert-circle set-row-icon'; }
@@ -722,7 +835,8 @@ document.addEventListener('visibilitychange', function() {
     var calOpen = document.getElementById('cal-overlay').classList.contains('open');
     var attOpen = document.getElementById('att-overlay').classList.contains('open');
     var dlgOpen = document.getElementById('dlg-bg').classList.contains('open');
-    if (!calOpen && !attOpen && !dlgOpen) {
+    var curriOpen = document.getElementById('curri-overlay').classList.contains('open');
+    if (!calOpen && !attOpen && !dlgOpen && !curriOpen) {
       syncFromSheet(true); // silent モード(エラー時もアラート出さない)
     }
   }
