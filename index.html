@@ -99,10 +99,14 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .memo-input:focus{border-color:var(--accent-border);background:var(--surface)}
 .sh-register{width:100%;padding:13px;border:1px solid var(--accent-border);border-radius:var(--radius-sm);background:var(--accent-bg);color:var(--accent-text);font-size:15px;cursor:pointer;margin-top:12px;font-family:inherit;font-weight:700;transition:background .1s}
 .sh-register:active{background:var(--accent-border)}
-.curri-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.curri-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
 .curri-hdr-title{font-size:16px;font-weight:700;color:var(--text)}
-.curri-refresh{width:32px;height:32px;border-radius:var(--radius-sm);border:1px solid var(--accent-border);background:var(--accent-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--accent);font-family:inherit}
-.curri-refresh:active{background:var(--accent-border)}
+.curri-hdr-btns{display:flex;gap:6px;flex-shrink:0}
+.curri-register-btn{padding:6px 14px;border:1px solid var(--accent-border);background:var(--accent-bg);color:var(--accent-text);font-size:13px;font-weight:700;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;transition:background .1s}
+.curri-register-btn:active{background:var(--accent-border)}
+.curri-register-btn:disabled{opacity:.6;cursor:not-allowed}
+.curri-close-btn{padding:6px 14px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:13px;font-weight:500;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;transition:background .1s}
+.curri-close-btn:active{background:var(--border)}
 .curri-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px}
 .curri-name{font-size:15px;font-weight:700;color:var(--accent-text);margin-bottom:8px}
 .curri-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--text2);margin-bottom:12px}
@@ -224,10 +228,12 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
     <div class="sh-handle"></div>
     <div class="curri-hdr">
       <div class="curri-hdr-title">科目別の進捗</div>
-      <button class="curri-refresh" onclick="syncFromSheet()" aria-label="最新データに更新"><i class="ti ti-refresh" style="font-size:14px"></i></button>
+      <div class="curri-hdr-btns">
+        <button class="curri-register-btn" onclick="registerCurri()" id="curri-register-btn">登録</button>
+        <button class="curri-close-btn" onclick="closeCurriSheet()">閉じる</button>
+      </div>
     </div>
     <div id="curri-sheet-body"></div>
-    <button class="sh-close" onclick="closeCurriSheet()">閉じる</button>
   </div>
 </div>
 
@@ -300,6 +306,7 @@ if (!state.memos) state.memos = {}; // 🟩 メモを保持するオブジェク
 if (!state.curriculum) state.curriculum = []; // 🟩 履修進捗 [{name, units, scReq, scAct, rpReq, rpAct}, ...]
 
 var curPage = 'today', calY = 0, calM = 0, dlgKey = null, dlgH = null, calSheetKey = null;
+var curriDirty = false; // 🟩 履修詳細の未保存変更フラグ
 
 function save() { try { localStorage.setItem('school_v11', JSON.stringify(state)); } catch(e) {} }
 function dateKey(d) { return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); }
@@ -456,7 +463,7 @@ function renderMemoList() {
   box.innerHTML = html;
 }
 
-function openCalSheet(key) {
+async function openCalSheet(key) {
   calSheetKey = key;
   if (!state.data[key]) {
     state.data[key] = {};
@@ -464,9 +471,21 @@ function openCalSheet(key) {
     if (!state.dates.includes(key)) { state.dates.push(key); state.dates.sort(); }
     save();
   }
-  document.getElementById('cal-sheet-title').textContent = fmtMD(key) + '（' + wday(key) + '）';
+  document.getElementById('cal-sheet-title').textContent = fmtMD(key) + '(' + wday(key) + ')';
+  // まずローカルデータで即表示(待ち時間ゼロ)
   renderCalSheetBody(key);
   document.getElementById('cal-overlay').classList.add('open');
+  // 🟩 バグ修正: 開いた直後にバックグラウンドで最新データを取得して再描画
+  // (科目だけ選んで教室未選択のままsyncが走り、teacherが空のままになるのを防ぐ)
+  try {
+    await syncFromSheet(true); // silent モード
+    // モーダルが開いたままで、同じ日付なら再描画
+    if (calSheetKey === key && document.getElementById('cal-overlay').classList.contains('open')) {
+      renderCalSheetBody(key);
+    }
+  } catch(e) {
+    console.error('カレンダーシートのデータ更新エラー:', e);
+  }
 }
 
 function renderCalSheetBody(key) {
@@ -565,6 +584,10 @@ async function registerCalSheet() {
   document.getElementById('cal-overlay').classList.remove('open');
   calSheetKey = null;
 
+  // 🟩 GAS側の書き込みが反映されるまで少し待ってから再取得
+  // (onSubjChange/onRoomChange/postMemoToGASは非同期で発火しているため)
+  await new Promise(function(r) { setTimeout(r, 500); });
+
   try {
     await syncFromSheet(true); // silent モード
   } catch(e) { console.error('再取得エラー:', e); }
@@ -623,15 +646,27 @@ function closeAttSheet(e) {
   }
 }
 
-// 🟩 履修詳細シートを開く
-function openCurriculumSheet() {
-  renderCurriBody();
+// 🟩 履修詳細シートを開く(開いた瞬間に最新データを取得)
+async function openCurriculumSheet() {
+  curriDirty = false; // 開いた時は未編集状態
+  // まずシートを開いて「読み込み中…」表示
+  document.getElementById('curri-sheet-body').innerHTML = '<div style="font-size:13px;color:var(--text3);padding:1.5rem 0;text-align:center;"><i class="ti ti-loader-2 spinning" style="font-size:20px;display:inline-block;"></i><div style="margin-top:6px">最新データを取得中…</div></div>';
   document.getElementById('curri-overlay').classList.add('open');
+  // 最新データを取得(失敗してもローカルデータで表示)
+  try {
+    await syncFromSheet(true); // silent モード
+  } catch(e) { console.error('履修詳細の最新取得エラー:', e); }
+  renderCurriBody();
 }
 
 function closeCurriSheet(e) {
   if (!e || e.target === document.getElementById('curri-overlay')) {
+    // 未保存の変更があれば確認
+    if (curriDirty) {
+      if (!confirm('変更が登録されていません。閉じてもよろしいですか?')) return;
+    }
     document.getElementById('curri-overlay').classList.remove('open');
+    curriDirty = false;
   }
 }
 
@@ -640,7 +675,7 @@ function renderCurriBody() {
   var box = document.getElementById('curri-sheet-body');
   var list = state.curriculum || [];
   if (!list.length) {
-    box.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:1rem 0;text-align:center;">履修データがありません<br><span style="font-size:12px">右上の更新ボタンを押してください</span></div>';
+    box.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:1rem 0;text-align:center;">履修データがありません<br><span style="font-size:12px">設定画面の「スプシからデータを読込」を実行してください</span></div>';
     return;
   }
   var html = '';
@@ -674,28 +709,43 @@ function renderCurriBody() {
   box.innerHTML = html;
 }
 
-// 🟩 履修詳細の実績変更
+// 🟩 プルダウン変更時: ローカルのみ更新(GASには送らない)
 function onCurriChange(idx, field, val) {
   if (!state.curriculum[idx]) return;
   state.curriculum[idx][field] = Number(val);
-  save();
-  // GASへ即時保存
-  postCurriToGAS(state.curriculum[idx]);
+  curriDirty = true; // 未保存フラグを立てる
+  save(); // localStorageには保存しておく(アプリ再起動で復元するため)
 }
 
-// 🟩 履修詳細をGASへ送信
-async function postCurriToGAS(item) {
-  var payload = {
-    action: 'saveCurri',
-    data: {
-      name: item.name,
-      scAct: Number(item.scAct) || 0,
-      rpAct: Number(item.rpAct) || 0
-    }
-  };
+// 🟩 「登録」ボタン押下: 全件まとめてGASへ送信
+async function registerCurri() {
+  var btn = document.getElementById('curri-register-btn');
+  if (btn) { btn.textContent = '登録中…'; btn.disabled = true; }
+
   try {
+    var payload = {
+      action: 'saveCurriBatch',
+      data: state.curriculum.map(function(it) {
+        return {
+          name: it.name,
+          scAct: Number(it.scAct) || 0,
+          rpAct: Number(it.rpAct) || 0
+        };
+      })
+    };
     await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-  } catch(e) { console.error('履修GAS同期エラー:', e); }
+    curriDirty = false;
+    if (btn) { btn.textContent = '登録 ✓'; }
+    // 少ししたら通常表示に戻して閉じる
+    setTimeout(function() {
+      if (btn) { btn.textContent = '登録'; btn.disabled = false; }
+      document.getElementById('curri-overlay').classList.remove('open');
+    }, 800);
+  } catch(e) {
+    console.error('履修一括保存エラー:', e);
+    alert('登録に失敗しました: ' + e.message);
+    if (btn) { btn.textContent = '登録'; btn.disabled = false; }
+  }
 }
 
 function renderSettings() {
