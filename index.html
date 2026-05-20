@@ -80,6 +80,22 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
 .cal-mon{font-size:18px;font-weight:700}
 .cal-arr{width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);box-shadow:var(--shadow)}
+.cal-refresh{width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--accent-border);background:var(--accent-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--accent);box-shadow:var(--shadow);margin-left:8px;font-family:inherit;transition:background .1s}
+.cal-refresh:active{background:var(--accent-border)}
+.cal-refresh .ti-refresh.spinning{animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+#memo-list-box{margin-top:1.5rem}
+.memo-list-title{font-size:11px;color:var(--text3);font-weight:700;letter-spacing:.1em;margin-bottom:8px;padding:0 4px}
+.memo-list-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px;box-shadow:var(--shadow)}
+.memo-list-date{font-size:13px;font-weight:700;color:var(--accent);flex-shrink:0;min-width:60px}
+.memo-list-text{font-size:13px;color:var(--text);flex:1;word-break:break-word;white-space:pre-wrap}
+.memo-list-empty{font-size:12px;color:var(--text3);text-align:center;padding:14px;background:var(--surface);border:1px dashed var(--border2);border-radius:var(--radius-sm)}
+.memo-input-wrap{margin-bottom:12px}
+.memo-input-label{font-size:11px;color:var(--text3);font-weight:500;margin-bottom:5px;display:block}
+.memo-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:inherit;font-size:14px;outline:none;resize:vertical;min-height:60px;box-sizing:border-box}
+.memo-input:focus{border-color:var(--accent-border);background:var(--surface)}
+.sh-register{width:100%;padding:13px;border:1px solid var(--accent-border);border-radius:var(--radius-sm);background:var(--accent-bg);color:var(--accent-text);font-size:15px;cursor:pointer;margin-top:12px;font-family:inherit;font-weight:700;transition:background .1s}
+.sh-register:active{background:var(--accent-border)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .cal-wd{text-align:center;font-size:11px;font-weight:500;color:var(--text3);padding:4px 0}
 .cal-cell{min-height:54px;border-radius:var(--radius-sm);padding:5px 3px;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:background .1s}
@@ -146,6 +162,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
       <button class="cal-arr" onclick="calMove(-1)" aria-label="前の月"><i class="ti ti-chevron-left" style="font-size:18px"></i></button>
       <div class="cal-mon" id="cal-mon"></div>
       <button class="cal-arr" onclick="calMove(1)" aria-label="次の月"><i class="ti ti-chevron-right" style="font-size:18px"></i></button>
+      <button class="cal-refresh" onclick="syncFromSheet()" aria-label="最新データに更新" id="cal-refresh-btn"><i class="ti ti-refresh" id="cal-refresh-icon" style="font-size:18px"></i></button>
     </div>
     <div style="text-align:center;margin-bottom:12px;">
       <button onclick="openAttendanceSheet()" style="padding:6px 16px;border:1px solid var(--border2);border-radius:20px;background:var(--surface);color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;box-shadow:var(--shadow);display:inline-flex;align-items:center;gap:4px;"><i class="ti ti-checkbox" style="font-size:15px;color:var(--accent)"></i>出席数を確認</button>
@@ -154,6 +171,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
       <div class="cal-wd">日</div><div class="cal-wd">月</div><div class="cal-wd">火</div>
       <div class="cal-wd">水</div><div class="cal-wd">木</div><div class="cal-wd">金</div><div class="cal-wd">土</div>
     </div>
+    <div id="memo-list-box"></div>
   </div>
   <div class="page" id="page-events"></div>
   <div class="page" id="page-settings"></div>
@@ -172,7 +190,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
     <div class="sh-handle"></div>
     <div class="sh-title" id="cal-sheet-title"></div>
     <div id="cal-sheet-body"></div>
-    <button class="sh-close" onclick="closeCalSheet()">閉じる</button>
+    <button class="sh-register" onclick="registerCalSheet()">登録</button>
   </div>
 </div>
 
@@ -247,9 +265,10 @@ var DEF_EVENTS = [
   {date:'2027-03-08',name:'後期卒業式',memo:'福岡市民ホール',units:2,status:'参加予定'}
 ];
 
-var state = JSON.parse(localStorage.getItem('school_v11') || 'null') || {dates:[],data:{},subjects:[],events:[],lastUpdated:null};
+var state = JSON.parse(localStorage.getItem('school_v11') || 'null') || {dates:[],data:{},subjects:[],events:[],memos:{},lastUpdated:null};
 if (!state.subjects || !state.subjects.length) state.subjects = DEF_SUBJECTS;
 if (!state.events || !state.events.length) state.events = DEF_EVENTS;
+if (!state.memos) state.memos = {}; // 🟩 メモを保持するオブジェクト{ 'YYYY-MM-DD': 'メモ文' }
 
 var curPage = 'today', calY = 0, calM = 0, dlgKey = null, dlgH = null, calSheetKey = null;
 
@@ -385,6 +404,27 @@ function renderCal() {
     if (!item.other) cell.onclick = (function(k) { return function() { openCalSheet(k); }; })(key);
     grid.appendChild(cell);
   });
+  renderMemoList(); // 🟩 カレンダー下にメモ一覧を表示
+}
+
+// 🟩 カレンダーの下に「今日以降のメモ」を白枠で一覧表示
+function renderMemoList() {
+  var box = document.getElementById('memo-list-box');
+  if (!box) return;
+  var today = dateKey(nowD());
+  var memos = state.memos || {};
+  var keys = Object.keys(memos).filter(function(k) { return k >= today && memos[k] && memos[k].trim(); }).sort();
+  var html = '<div class="memo-list-title">今日以降のメモ</div>';
+  if (!keys.length) {
+    html += '<div class="memo-list-empty">メモはありません</div>';
+  } else {
+    keys.forEach(function(k) {
+      var p = k.split('-');
+      var label = parseInt(p[1]) + '月' + parseInt(p[2]) + '日';
+      html += '<div class="memo-list-item"><span class="memo-list-date">' + label + '</span><span class="memo-list-text">' + escHtml(memos[k]) + '</span></div>';
+    });
+  }
+  box.innerHTML = html;
 }
 
 function openCalSheet(key) {
@@ -410,16 +450,23 @@ function renderCalSheetBody(key) {
       html += '<div class="sh-ev"><i class="ti ti-star" style="font-size:14px;color:var(--warn);flex-shrink:0"></i><span style="flex:1;font-size:14px;font-weight:500">' + e.name + '</span>' + (e.memo ? '<span style="font-size:12px;color:var(--text2)">' + e.memo + '</span>' : '') + '</div>';
     });
   }
-  html += '<div class="sec" style="' + (evts.length ? '' : 'margin-top:0') + '">授業を登録</div>';
+  // 🟩 メモ欄(その日のメモ)を追加
+  var dayMemo = (state.memos && state.memos[key]) ? state.memos[key] : '';
+  html += '<div class="sec" style="' + (evts.length ? '' : 'margin-top:0') + '">メモ</div>';
+  html += '<div class="memo-input-wrap"><textarea class="memo-input" id="day-memo-input" placeholder="この日のメモ(任意)" maxlength="500">' + escHtml(dayMemo) + '</textarea></div>';
+  html += '<div class="sec">授業を登録</div>';
   HOURS.forEach(function(h) {
     var slot = dayData[h] || {subject:'', room:'', attended:false};
     var has = !!slot.subject;
-    var subjOpts = '<option value="">（なし）</option>' + state.subjects.map(function(s) { return '<option value="' + s + '"' + (slot.subject === s ? ' selected' : '') + '>' + s + '</option>'; }).join('');
+    var subjOpts = '<option value="">(なし)</option>' + state.subjects.map(function(s) { return '<option value="' + s + '"' + (slot.subject === s ? ' selected' : '') + '>' + s + '</option>'; }).join('');
     var roomOpts = '<option value="">　</option>' + ROOMS.map(function(r) { return '<option value="' + r + '"' + (slot.room === r ? ' selected' : '') + '>' + r + '</option>'; }).join('');
     html += '<div class="reg-slot"><span class="reg-time">' + h + ':00</span><div class="reg-card' + (has ? ' has' : '') + '" id="rc-' + h + '"><select class="subj-sel" id="ss-' + h + '" onchange="onSubjChange(' + h + ')" aria-label="' + h + '時の科目">' + subjOpts + '</select>' + (has ? '<select class="room-sel" id="rs-' + h + '" onchange="onRoomChange(' + h + ')" aria-label="教室">' + roomOpts + '</select><button class="clr-btn" onclick="clearSlot(' + h + ')" aria-label="クリア"><i class="ti ti-x" style="font-size:12px"></i></button>' : '') + '</div></div>';
   });
   document.getElementById('cal-sheet-body').innerHTML = html;
 }
+
+// 🟩 HTMLエスケープ(textarea初期値用)
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function onSubjChange(h) {
   var val = document.getElementById('ss-' + h).value;
@@ -460,6 +507,55 @@ function closeCalSheet(e) {
     if (curPage === 'tmrw') renderDay('tmrw');
     calSheetKey = null;
   }
+}
+
+// 🟩 「登録」ボタン押下時: メモを保存 → GASに同期 → 最新データを取得して画面更新
+async function registerCalSheet() {
+  if (!calSheetKey) return;
+  var btn = document.querySelector('#cal-overlay .sh-register');
+  var origText = btn ? btn.textContent : '登録';
+  if (btn) { btn.textContent = '登録中…'; btn.disabled = true; }
+
+  // 1. メモを取得して保存
+  var memoEl = document.getElementById('day-memo-input');
+  var memoVal = memoEl ? memoEl.value.trim() : '';
+  var key = calSheetKey;
+  if (memoVal) {
+    state.memos[key] = memoVal;
+  } else {
+    delete state.memos[key];
+  }
+  save();
+
+  // 2. メモをGASに送信(その日の最初の登録済み授業のメモとして保存。授業がなければ専用行で保存)
+  try {
+    await postMemoToGAS(key, memoVal);
+  } catch(e) { console.error('メモ保存エラー:', e); }
+
+  // 3. シートを閉じて、最新データを再取得(他端末の変更を反映)
+  document.getElementById('cal-overlay').classList.remove('open');
+  calSheetKey = null;
+
+  try {
+    await syncFromSheet(true); // silent モード
+  } catch(e) { console.error('再取得エラー:', e); }
+
+  renderCal();
+  if (curPage === 'today') renderDay('today');
+  if (curPage === 'tmrw') renderDay('tmrw');
+
+  if (btn) { btn.textContent = origText; btn.disabled = false; }
+}
+
+// 🟩 メモをGASへ送信
+async function postMemoToGAS(key, memo) {
+  var payload = {
+    action: 'saveMemo',
+    data: { date: key, memo: memo }
+  };
+  try {
+    await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+  } catch(e) { console.error('メモGAS同期エラー:', e); }
 }
 
 // 📊 科目別出席数シートを開く関数を追加
@@ -527,9 +623,11 @@ function closeResetDlg(doReset) {
 }
 
 // 🟩 GASからデータを読み込む関数 (GET)
-async function syncFromSheet() {
+async function syncFromSheet(silent) {
   var icon = document.getElementById('sync-icon');
+  var calIcon = document.getElementById('cal-refresh-icon');
   if (icon) { icon.className = 'ti ti-refresh set-row-icon spinning'; }
+  if (calIcon) { calIcon.classList.add('spinning'); }
   try {
     var res = await fetch(API_URL + '?mode=all');
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -543,6 +641,7 @@ async function syncFromSheet() {
     // 3. 授業記録の同期 (アプリ内のデータ構造へ展開)
     state.data = {};
     state.dates = [];
+    state.memos = state.memos || {};
     if (data.records && data.records.length) {
       data.records.forEach(function(r) {
         if (!state.data[r.date]) {
@@ -562,6 +661,11 @@ async function syncFromSheet() {
       });
       state.dates.sort();
     }
+
+    // 4. 🟩 メモの同期(GAS側で日付ごとのメモを返す)
+    if (data.memos) {
+      state.memos = data.memos;
+    }
     
     state.lastUpdated = new Date().toISOString();
     save();
@@ -572,8 +676,10 @@ async function syncFromSheet() {
     renderSettings();
   } catch(err) {
     if (icon) { icon.className = 'ti ti-alert-circle set-row-icon'; }
-    alert('更新失敗: ' + err.message);
+    if (!silent) alert('更新失敗: ' + err.message);
     setTimeout(function() { renderSettings(); }, 2000);
+  } finally {
+    if (calIcon) { calIcon.classList.remove('spinning'); }
   }
 }
 
@@ -604,6 +710,23 @@ async function postRecordToGAS(action, key, h) {
 
 var t = nowD(); calY = t.getFullYear(); calM = t.getMonth();
 renderDay('today');
+
+// 🟩 起動時に最新データを取得(初回起動&リロード時)
+syncFromSheet(true);
+
+// 🟩 画面が表示状態になった時に自動でデータを取得
+// (スマホロック解除でアプリに戻った時、PCで別タブから戻った時など)
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    // モーダルが開いていない時だけ更新(編集中の上書きを防ぐ)
+    var calOpen = document.getElementById('cal-overlay').classList.contains('open');
+    var attOpen = document.getElementById('att-overlay').classList.contains('open');
+    var dlgOpen = document.getElementById('dlg-bg').classList.contains('open');
+    if (!calOpen && !attOpen && !dlgOpen) {
+      syncFromSheet(true); // silent モード(エラー時もアラート出さない)
+    }
+  }
+});
 </script>
 </body>
 </html>
