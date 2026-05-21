@@ -506,8 +506,9 @@ function renderCalSheetBody(key) {
   HOURS.forEach(function(h) {
     var slot = dayData[h] || {subject:'', room:'', attended:false};
     var has = !!slot.subject;
+    var slotRoom = (slot.room === null || slot.room === undefined) ? '' : String(slot.room); // 🟩 数値で来ても文字列比較できるように
     var subjOpts = '<option value="">(なし)</option>' + state.subjects.map(function(s) { return '<option value="' + s + '"' + (slot.subject === s ? ' selected' : '') + '>' + s + '</option>'; }).join('');
-    var roomOpts = '<option value="">　</option>' + ROOMS.map(function(r) { return '<option value="' + r + '"' + (slot.room === r ? ' selected' : '') + '>' + r + '</option>'; }).join('');
+    var roomOpts = '<option value="">　</option>' + ROOMS.map(function(r) { return '<option value="' + r + '"' + (slotRoom === r ? ' selected' : '') + '>' + r + '</option>'; }).join('');
     html += '<div class="reg-slot"><span class="reg-time">' + h + ':00</span><div class="reg-card' + (has ? ' has' : '') + '" id="rc-' + h + '"><select class="subj-sel" id="ss-' + h + '" onchange="onSubjChange(' + h + ')" aria-label="' + h + '時の科目">' + subjOpts + '</select>' + (has ? '<select class="room-sel" id="rs-' + h + '" onchange="onRoomChange(' + h + ')" aria-label="教室">' + roomOpts + '</select><button class="clr-btn" onclick="clearSlot(' + h + ')" aria-label="クリア"><i class="ti ti-x" style="font-size:12px"></i></button>' : '') + '</div></div>';
   });
   document.getElementById('cal-sheet-body').innerHTML = html;
