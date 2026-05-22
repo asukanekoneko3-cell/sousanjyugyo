@@ -66,6 +66,8 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .evcard{display:flex;align-items:flex-start;gap:12px;padding:12px 15px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow)}
 .evcard.joined{background:var(--accent-bg);border-color:var(--accent-border)}
 .evcard.planned{background:var(--warn-bg);border-color:var(--warn-border)}
+.day-memo-card{display:flex;align-items:flex-start;gap:10px;padding:12px 15px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow)}
+.day-memo-text{flex:1;font-size:14px;color:var(--text);white-space:pre-wrap;word-break:break-word;line-height:1.5}
 .ev-date{width:44px;flex-shrink:0;text-align:center}
 .ev-mo{font-size:10px;color:var(--text3);font-weight:500}
 .ev-d{font-size:20px;font-weight:700;line-height:1.2}
@@ -307,6 +309,7 @@ if (!state.curriculum) state.curriculum = []; // 🟩 履修進捗 [{name, units
 
 var curPage = 'today', calY = 0, calM = 0, dlgKey = null, dlgH = null, calSheetKey = null;
 var curriDirty = false; // 🟩 履修詳細の未保存変更フラグ
+var calSheetOriginalMemo = ''; // 🟩 カレンダーシートを開いた時点のメモ(変更検知用)
 
 function save() { try { localStorage.setItem('school_v11', JSON.stringify(state)); } catch(e) {} }
 function dateKey(d) { return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); }
@@ -346,10 +349,17 @@ function renderDay(which) {
     });
   }
 
+  // 🟩 その日のメモを表示
+  var dayMemo = (state.memos && state.memos[key]) ? state.memos[key] : '';
+  if (dayMemo) {
+    html += '<div class="sec">メモ</div>';
+    html += '<div class="day-memo-card"><i class="ti ti-notes" style="font-size:16px;color:var(--accent);flex-shrink:0;margin-top:2px"></i><div class="day-memo-text">' + escHtml(dayMemo) + '</div></div>';
+  }
+
   var dayData = state.data[key];
   var classes = dayData ? HOURS.filter(function(h) { return dayData[h] && dayData[h].subject; }) : [];
   if (!classes.length) {
-    if (!dayEvts.length) html += '<div class="empty"><i class="ti ti-calendar-off"></i><p>授業が登録されていません<br><span style="font-size:12px">カレンダーの日付をタップして登録できます</span></p></div>';
+    if (!dayEvts.length && !dayMemo) html += '<div class="empty"><i class="ti ti-calendar-off"></i><p>授業が登録されていません<br><span style="font-size:12px">カレンダーの日付をタップして登録できます</span></p></div>';
     con.innerHTML = html; return;
   }
 
@@ -471,16 +481,18 @@ async function openCalSheet(key) {
     if (!state.dates.includes(key)) { state.dates.push(key); state.dates.sort(); }
     save();
   }
+  // 🟩 開いた時点のメモを保存(閉じる時の変更検知用)
+  calSheetOriginalMemo = (state.memos && state.memos[key]) ? state.memos[key] : '';
   document.getElementById('cal-sheet-title').textContent = fmtMD(key) + '(' + wday(key) + ')';
   // まずローカルデータで即表示(待ち時間ゼロ)
   renderCalSheetBody(key);
   document.getElementById('cal-overlay').classList.add('open');
   // 🟩 バグ修正: 開いた直後にバックグラウンドで最新データを取得して再描画
-  // (科目だけ選んで教室未選択のままsyncが走り、teacherが空のままになるのを防ぐ)
   try {
     await syncFromSheet(true); // silent モード
-    // モーダルが開いたままで、同じ日付なら再描画
     if (calSheetKey === key && document.getElementById('cal-overlay').classList.contains('open')) {
+      // 最新メモで開いた時点を更新(他端末で更新されてた場合に備える)
+      calSheetOriginalMemo = (state.memos && state.memos[key]) ? state.memos[key] : '';
       renderCalSheetBody(key);
     }
   } catch(e) {
@@ -550,11 +562,20 @@ function clearSlot(h) {
 
 function closeCalSheet(e) {
   if (!e || e.target === document.getElementById('cal-overlay')) {
+    // 🟩 未保存のメモ変更を検知
+    var memoEl = document.getElementById('day-memo-input');
+    if (memoEl) {
+      var currentMemo = memoEl.value.trim();
+      if (currentMemo !== calSheetOriginalMemo) {
+        if (!confirm('メモが登録されていません。\n閉じてもよろしいですか?')) return;
+      }
+    }
     document.getElementById('cal-overlay').classList.remove('open');
     renderCal();
     if (curPage === 'today') renderDay('today');
     if (curPage === 'tmrw') renderDay('tmrw');
     calSheetKey = null;
+    calSheetOriginalMemo = ''; // リセット
   }
 }
 
@@ -584,6 +605,7 @@ async function registerCalSheet() {
   // 3. シートを閉じて、最新データを再取得(他端末の変更を反映)
   document.getElementById('cal-overlay').classList.remove('open');
   calSheetKey = null;
+  calSheetOriginalMemo = ''; // 🟩 リセット
 
   // 🟩 GAS側の書き込みが反映されるまで少し待ってから再取得
   // (onSubjChange/onRoomChange/postMemoToGASは非同期で発火しているため)
@@ -642,7 +664,6 @@ function openAttendanceSheet() {
 
 function closeAttSheet(e) {
   if (!e || e.target === document.getElementById('att-overlay')) {
-    document.getElementById('att-overlay').classList.remove('remove');
     document.getElementById('att-overlay').classList.remove('open');
   }
 }
